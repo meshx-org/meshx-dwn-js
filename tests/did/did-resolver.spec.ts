@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import chai, { expect } from 'chai';
 
 import { DidIonResolver } from '../../src/did/did-ion-resolver.js';
-import { DidResolver } from '../../src/did/did-resolver.js';
+import { DIDResolver } from '../../src/did/did-resolver.js';
 
 // extends chai to test promises
 chai.use(chaiAsPromised);
@@ -12,7 +12,7 @@ describe('DidResolver', () => {
   it('should cache the resolution result and use the cached result when available', async () => {
     const did = 'did:ion:unusedDid';
     const didIonResolver = new DidIonResolver('unusedResolutionEndpoint');
-    const didResolver = new DidResolver([didIonResolver]);
+    const didResolver = new DIDResolver([didIonResolver]);
 
     const mockResolution = {
       didDocument           : 'any' as any,

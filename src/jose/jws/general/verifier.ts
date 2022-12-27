@@ -5,7 +5,7 @@ import type { GeneralJws, SignatureEntry } from './types.js';
 
 import lodash from 'lodash';
 
-import { DidResolver } from '../../../did/did-resolver.js';
+import { DIDResolver } from '../../../did/did-resolver.js';
 import { Encoder } from '../../../utils/encoder.js';
 import { MemoryCache } from '../../../utils/memory-cache.js';
 import { validateJsonSchema } from '../../../validator.js';
@@ -25,7 +25,7 @@ export class GeneralJwsVerifier {
     this.cache = cache || new MemoryCache(600);
   }
 
-  async verify(didResolver: DidResolver): Promise<VerificationResult> {
+  async verify(didResolver: DIDResolver): Promise<VerificationResult> {
     const signers: string[] = [];
 
     for (const signatureEntry of this.jws.signatures) {
@@ -76,7 +76,7 @@ export class GeneralJwsVerifier {
   /**
    * Gets the public key given a fully qualified key ID (`kid`).
    */
-  public static async getPublicKey(kid: string, didResolver: DidResolver): Promise<PublicJwk> {
+  public static async getPublicKey(kid: string, didResolver: DIDResolver): Promise<PublicJwk> {
     // `resolve` throws exception if DID is invalid, DID method is not supported,
     // or resolving DID fails
     const did = GeneralJwsVerifier.extractDid(kid);

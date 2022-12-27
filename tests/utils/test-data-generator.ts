@@ -1,7 +1,7 @@
 import * as cbor from '@ipld/dag-cbor';
 import { BaseMessage } from '../../src/core/types.js';
 import { CID } from 'multiformats/cid';
-import { DidResolutionResult } from '../../src/did/did-resolver.js';
+import { DIDResolutionResult } from '../../src/did/did-resolver.js';
 import { ed25519 } from '../../src/jose/algorithms/signing/ed25519.js';
 import { getCurrentTimeInHighPrecision } from '../../src/utils/time.js';
 import { PermissionsRequest } from '../../src/interfaces/permissions/messages/permissions-request.js';
@@ -401,7 +401,7 @@ export class TestDataGenerator {
   /**
    * Creates a mock DID resolution result for testing purposes.
    */
-  public static createDidResolutionResult(persona: Persona): DidResolutionResult {
+  public static createDidResolutionResult(persona: Persona): DIDResolutionResult {
     return {
       didResolutionMetadata : {},
       didDocument           : {

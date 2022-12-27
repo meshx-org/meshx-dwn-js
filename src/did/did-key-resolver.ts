@@ -1,9 +1,9 @@
-import type { DidDocument, DidMethodResolver, DidResolutionResult } from './did-resolver.js';
+import type { DIDDocument, DIDMethodResolver, DIDResolutionResult } from './did-resolver.js';
 
 import varint from 'varint';
 
 import { base58btc } from 'multiformats/bases/base58';
-import { Did } from './did.js';
+import { DID } from './did.js';
 import { ed25519 } from '../../src/jose/algorithms/signing/ed25519.js';
 import { Encoder } from '../utils/encoder.js';
 import { secp256k1 } from '../jose/algorithms/signing/secp256k1.js';
@@ -17,7 +17,7 @@ import { PrivateJwk, PublicJwk } from '../jose/types.js';
  * Helpful Resources:
  * * [DID-Key Draft Spec](https://w3c-ccg.github.io/did-method-key/)
  */
-export class DidKeyResolver implements DidMethodResolver {
+export class DidKeyResolver implements DIDMethodResolver {
   method(): string {
     return 'key';
   }
@@ -44,7 +44,7 @@ export class DidKeyResolver implements DidMethodResolver {
     return multicodecHeaderSize;
   }
 
-  async resolve(did): Promise<DidResolutionResult> {
+  async resolve(did): Promise<DIDResolutionResult> {
     const [_scheme, _method, id] = did.split(':', 3);
 
     try {
@@ -69,7 +69,7 @@ export class DidKeyResolver implements DidMethodResolver {
 
       const keyId = `${did}#${id}`;
 
-      const didDocument: DidDocument = {
+      const didDocument: DIDDocument = {
         '@context': [
           'https://www.w3.org/ns/did/v1',
           'https://w3id.org/security/suites/jws-2020/v1',
@@ -134,7 +134,7 @@ export class DidKeyResolver implements DidMethodResolver {
    * Gets the fully qualified key ID of a `did:key` DID. ie. '<did>#<method-specific-id>'
    */
   public static getKeyId(did: string): string {
-    const methodSpecificId = Did.getMethodSpecificId(did);
+    const methodSpecificId = DID.getMethodSpecificId(did);
     const keyId = `${did}#${methodSpecificId}`;
     return keyId;
   };

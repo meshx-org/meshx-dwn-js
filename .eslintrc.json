@@ -1,0 +1,89 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest", // Allows the use of modern ECMAScript features
+        "sourceType": "module" // Allows for the use of imports
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "env": {
+        "node": true, // Enable Node.js global variables
+        "browser": true
+    },
+    "rules": {
+        "curly": [
+            "error",
+            "all"
+        ],
+        "no-console": "off",
+        "indent": [
+            "error",
+            4
+        ],
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "allowTemplateLiterals": true
+            }
+        ],
+        "@typescript-eslint/semi": [
+            "off"
+        ],
+        "semi": [
+            "off"
+        ],
+        "no-multi-spaces": [
+            "error"
+        ],
+        "no-trailing-spaces": [
+            "error"
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 120,
+                "ignoreStrings": true
+            }
+        ],
+        "key-spacing": [
+            "off"
+        ],
+        "keyword-spacing": [
+            "error",
+            {
+                "before": true,
+                "after": true
+            }
+        ],
+        "@typescript-eslint/explicit-function-return-type": [
+            "error"
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "after-used",
+                "ignoreRestSiblings": true,
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_"
+            }
+        ],
+        "prefer-const": [
+            "error",
+            {
+                "destructuring": "all"
+            }
+        ]
+    }
+}

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { DidResolutionResult, DidResolver } from '../../src/did/did-resolver.js';
+import { DIDResolutionResult, DIDResolver } from '../../src/did/did-resolver.js';
 import { Persona, TestDataGenerator } from './test-data-generator.js';
 
 /**
@@ -9,13 +9,13 @@ export class TestStubGenerator {
   /**
    * Creates a {DidResolver} stub for testing.
    */
-  public static createDidResolverStub(persona: Persona): DidResolver {
+  public static createDidResolverStub(persona: Persona): DIDResolver {
 
     // setting up a stub did resolver & message store
     const didResolutionResult = TestDataGenerator.createDidResolutionResult(persona);
-    const resolveStub = sinon.stub<[string], Promise<DidResolutionResult>>();
+    const resolveStub = sinon.stub<[string], Promise<DIDResolutionResult>>();
     resolveStub.withArgs(persona.did).resolves(didResolutionResult);
-    const didResolverStub = sinon.createStubInstance(DidResolver, { resolve: resolveStub });
+    const didResolverStub = sinon.createStubInstance(DIDResolver, { resolve: resolveStub });
 
     return didResolverStub;
   }

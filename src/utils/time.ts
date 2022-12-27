@@ -1,12 +1,12 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from '@js-temporal/polyfill'
 
 /**
  * sleeps for the desired duration
  * @param durationInMillisecond the desired amount of sleep time
  * @returns when the provided duration has passed
  */
-export function sleep(durationInMillisecond): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, durationInMillisecond));
+export function sleep(durationInMillisecond: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, durationInMillisecond))
 }
 
 /**
@@ -14,5 +14,5 @@ export function sleep(durationInMillisecond): Promise<void> {
  * using @js-temporal/polyfill
  */
 export function getCurrentTimeInHighPrecision(): string {
-  return Temporal.Now.plainDateTimeISO().toString({ smallestUnit: 'microseconds' });
+    return Temporal.Now.plainDateTimeISO().toString({ smallestUnit: 'microseconds' })
 }

@@ -7,7 +7,7 @@ import chai, { expect } from 'chai';
 import { base64url } from 'multiformats/bases/base64';
 import { CollectionsWriteMessage } from '../../../../src/interfaces/collections/types.js';
 import { DidKeyResolver } from '../../../../src/did/did-key-resolver.js';
-import { DidResolver } from '../../../../src/did/did-resolver.js';
+import { DIDResolver } from '../../../../src/did/did-resolver.js';
 import { Encoder } from '../../../../src/utils/encoder.js';
 import { GeneralJwsSigner } from '../../../../src/jose/jws/general/signer.js';
 import { getCurrentTimeInHighPrecision } from '../../../../src/utils/time.js';
@@ -23,12 +23,12 @@ import { GenerateCollectionsWriteMessageOutput, TestDataGenerator } from '../../
 chai.use(chaiAsPromised);
 
 describe('handleCollectionsWrite()', () => {
-  let didResolver: DidResolver;
+  let didResolver: DIDResolver;
   let messageStore: MessageStoreLevel;
 
   describe('functional tests', () => {
     before(async () => {
-      didResolver = new DidResolver([new DidKeyResolver()]);
+      didResolver = new DIDResolver([new DidKeyResolver()]);
 
       // important to follow this pattern to initialize the message store in tests
       // so that different suites can reuse the same block store and index location for testing
@@ -849,7 +849,7 @@ describe('handleCollectionsWrite()', () => {
 
     message.contextId = await TestDataGenerator.randomCborSha256Cid(); // make contextId mismatch from computed value
 
-    const didResolverStub = sinon.createStubInstance(DidResolver);
+    const didResolverStub = sinon.createStubInstance(DIDResolver);
     const messageStoreStub = sinon.createStubInstance(MessageStoreLevel);
 
     const reply = await handleCollectionsWrite(message, messageStoreStub, didResolverStub);
@@ -869,7 +869,7 @@ describe('handleCollectionsWrite()', () => {
     const signer = await GeneralJwsSigner.create(authorizationPayloadBytes, [signatureInput]);
     message.authorization = signer.getJws();
 
-    const didResolverStub = sinon.createStubInstance(DidResolver);
+    const didResolverStub = sinon.createStubInstance(DIDResolver);
     const messageStoreStub = sinon.createStubInstance(MessageStoreLevel);
     const reply = await handleCollectionsWrite(message, messageStoreStub, didResolverStub);
 
@@ -881,7 +881,7 @@ describe('handleCollectionsWrite()', () => {
     const messageData = await TestDataGenerator.generateCollectionsWriteMessage();
     messageData.message.encodedData = base64url.baseEncode(TestDataGenerator.randomBytes(50));
 
-    const didResolverStub = sinon.createStubInstance(DidResolver);
+    const didResolverStub = sinon.createStubInstance(DIDResolver);
     const messageStoreStub = sinon.createStubInstance(MessageStoreLevel);
 
     const reply = await handleCollectionsWrite(messageData.message, messageStoreStub, didResolverStub);

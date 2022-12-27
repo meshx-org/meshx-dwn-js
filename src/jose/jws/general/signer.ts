@@ -1,51 +1,51 @@
-import type { GeneralJws, SignatureInput } from './types.js';
+import type { GeneralJws, SignatureInput } from './types.js'
 
-import { Encoder } from '../../../utils/encoder.js';
-import { signers } from '../../algorithms/signing/signers.js';
+import { Encoder } from '../../../utils/encoder.js'
+import { signers } from '../../algorithms/signing/signers.js'
 
 export class GeneralJwsSigner {
-  private jws: GeneralJws;
+    private jws: GeneralJws
 
-  constructor(jws: GeneralJws) {
-    this.jws = jws;
-  }
-
-  static async create(payload: Uint8Array, signatureInputs: SignatureInput[] = []): Promise<GeneralJwsSigner> {
-    const jws: GeneralJws = {
-      payload    : Encoder.bytesToBase64Url(payload),
-      signatures : []
-    };
-
-    const signer = new GeneralJwsSigner(jws);
-
-    for (const signatureInput of signatureInputs) {
-      await signer.addSignature(signatureInput);
+    constructor(jws: GeneralJws) {
+        this.jws = jws
     }
 
-    return signer;
-  }
+    static async create(payload: Uint8Array, signatureInputs: SignatureInput[] = []): Promise<GeneralJwsSigner> {
+        const jws: GeneralJws = {
+            payload: Encoder.bytesToBase64Url(payload),
+            signatures: [],
+        }
 
-  async addSignature(signatureInput: SignatureInput): Promise<void> {
-    const { privateJwk, protectedHeader } = signatureInput;
-    const signer = signers[privateJwk.crv];
+        const signer = new GeneralJwsSigner(jws)
 
-    if (!signer) {
-      throw new Error(`unsupported crv. crv must be one of ${Object.keys(signers)}`);
+        for (const signatureInput of signatureInputs) {
+            await signer.addSignature(signatureInput)
+        }
+
+        return signer
     }
 
-    const protectedHeaderString = JSON.stringify(protectedHeader);
-    const protectedHeaderBase64UrlString = Encoder.stringToBase64Url(protectedHeaderString);
+    async addSignature(signatureInput: SignatureInput): Promise<void> {
+        const { privateJwk, protectedHeader } = signatureInput
+        const signer = signers[privateJwk.crv]
 
-    const signingInputString = `${protectedHeaderBase64UrlString}.${this.jws.payload}`;
-    const signingInputBytes = Encoder.stringToBytes(signingInputString);
+        if (!signer) {
+            throw new Error(`unsupported crv. crv must be one of ${Object.keys(signers)}`)
+        }
 
-    const signatureBytes = await signer.sign(signingInputBytes, privateJwk);
-    const signature = Encoder.bytesToBase64Url(signatureBytes);
+        const protectedHeaderString = JSON.stringify(protectedHeader)
+        const protectedHeaderBase64UrlString = Encoder.stringToBase64Url(protectedHeaderString)
 
-    this.jws.signatures.push({ protected: protectedHeaderBase64UrlString, signature });
-  }
+        const signingInputString = `${protectedHeaderBase64UrlString}.${this.jws.payload}`
+        const signingInputBytes = Encoder.stringToBytes(signingInputString)
 
-  getJws(): GeneralJws {
-    return this.jws;
-  }
+        const signatureBytes = await signer.sign(signingInputBytes, privateJwk)
+        const signature = Encoder.bytesToBase64Url(signatureBytes)
+
+        this.jws.signatures.push({ protected: protectedHeaderBase64UrlString, signature })
+    }
+
+    getJws(): GeneralJws {
+        return this.jws
+    }
 }

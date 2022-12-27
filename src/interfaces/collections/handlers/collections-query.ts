@@ -1,84 +1,87 @@
-import type { MethodHandler } from '../../types.js';
-import type { CollectionsQueryMessage, CollectionsWriteMessage } from '../types.js';
+import type { MethodHandler } from '../../types.js'
+import type { CollectionsQueryMessage, CollectionsWriteMessage } from '../types.js'
 
-import { authenticate } from '../../../core/auth.js';
-import { BaseMessage } from '../../../core/types.js';
-import { DwnMethodName } from '../../../core/message.js';
-import { lexicographicalCompare } from '../../../utils/string.js';
-import { MessageReply } from '../../../core/message-reply.js';
-import { MessageStore } from '../../../store/message-store.js';
-import { removeUndefinedProperties } from '../../../utils/object.js';
-import { CollectionsQuery, DateSort } from '../messages/collections-query.js';
+import { authenticate } from '../../../core/auth.js'
+import { BaseMessage } from '../../../core/types.js'
+import { DwnMethodName } from '../../../core/message.js'
+import { lexicographicalCompare } from '../../../utils/string.js'
+import { MessageReply } from '../../../core/message-reply.js'
+import { MessageStore } from '../../../store/types.js'
+import { removeUndefinedProperties } from '../../../utils/object.js'
+import { CollectionsQuery, DateSort } from '../messages/collections-query.js'
 
 export const handleCollectionsQuery: MethodHandler = async (
-  message,
-  messageStore,
-  didResolver
+    message,
+    messageStore,
+    didResolver
 ): Promise<MessageReply> => {
-  let collectionsQuery: CollectionsQuery;
-  try {
-    collectionsQuery = await CollectionsQuery.parse(message as CollectionsQueryMessage);
-  } catch (e) {
-    return new MessageReply({
-      status: { code: 400, detail: e.message }
-    });
-  }
-
-  try {
-    await authenticate(message.authorization, didResolver);
-    await collectionsQuery.authorize();
-  } catch (e) {
-    return new MessageReply({
-      status: { code: 401, detail: e.message }
-    });
-  }
-
-  try {
-    let records: BaseMessage[];
-    if (collectionsQuery.author === collectionsQuery.target) {
-      records = await fetchRecordsAsOwner(collectionsQuery, messageStore);
-    } else {
-      records = await fetchRecordsAsNonOwner(collectionsQuery, messageStore);
+    let collectionsQuery: CollectionsQuery
+    try {
+        collectionsQuery = await CollectionsQuery.parse(message as CollectionsQueryMessage)
+    } catch (e) {
+        return new MessageReply({
+            status: { code: 400, detail: e.message },
+        })
     }
 
-    // sort if `dataSort` is specified
-    if (collectionsQuery.message.descriptor.dateSort) {
-      records = await sortRecords(records, collectionsQuery.message.descriptor.dateSort);
+    try {
+        await authenticate(message.authorization, didResolver)
+        await collectionsQuery.authorize()
+    } catch (e) {
+        return new MessageReply({
+            status: { code: 401, detail: e.message },
+        })
     }
 
-    // strip away `authorization` property for each record before responding
-    const entries = [];
-    for (const record of records) {
-      const recordDuplicate = { ...record };
-      delete recordDuplicate.authorization;
-      entries.push(recordDuplicate);
-    }
+    try {
+        let records: BaseMessage[]
+        if (collectionsQuery.author === collectionsQuery.target) {
+            records = await fetchRecordsAsOwner(collectionsQuery, messageStore)
+        } else {
+            records = await fetchRecordsAsNonOwner(collectionsQuery, messageStore)
+        }
 
-    return new MessageReply({
-      status: { code: 200, detail: 'OK' },
-      entries
-    });
-  } catch (e) {
-    return new MessageReply({
-      status: { code: 500, detail: e.message }
-    });
-  }
-};
+        // sort if `dataSort` is specified
+        if (collectionsQuery.message.descriptor.dateSort) {
+            records = await sortRecords(records, collectionsQuery.message.descriptor.dateSort)
+        }
+
+        // strip away `authorization` property for each record before responding
+        const entries = []
+        for (const record of records) {
+            const recordDuplicate = { ...record }
+            delete recordDuplicate.authorization
+            entries.push(recordDuplicate)
+        }
+
+        return new MessageReply({
+            status: { code: 200, detail: 'OK' },
+            entries,
+        })
+    } catch (e) {
+        return new MessageReply({
+            status: { code: 500, detail: e.message },
+        })
+    }
+}
 /**
  * Fetches the records as the owner of the DWN with no additional filtering.
  */
-async function fetchRecordsAsOwner(collectionsQuery: CollectionsQuery, messageStore: MessageStore): Promise<BaseMessage[]> {
-  // fetch all published records matching the query
-  const includeCriteria = {
-    target            : collectionsQuery.target,
-    method            : DwnMethodName.CollectionsWrite,
-    isLatestBaseState : 'true',
-    ...collectionsQuery.message.descriptor.filter
-  };
-  removeUndefinedProperties(includeCriteria);
+async function fetchRecordsAsOwner(
+    collectionsQuery: CollectionsQuery,
+    messageStore: MessageStore
+): Promise<BaseMessage[]> {
+    // fetch all published records matching the query
+    const includeCriteria = {
+        target: collectionsQuery.target,
+        method: DwnMethodName.CollectionsWrite,
+        isLatestBaseState: 'true',
+        ...collectionsQuery.message.descriptor.filter,
+    }
+    removeUndefinedProperties(includeCriteria)
 
-  const records = await messageStore.query(includeCriteria);
-  return records;
+    const records = await messageStore.query(includeCriteria)
+    return records
 }
 
 /**
@@ -86,79 +89,88 @@ async function fetchRecordsAsOwner(collectionsQuery: CollectionsQuery, messageSt
  * 1. published records; and
  * 2. unpublished records intended for the requester (where `recipient` is the requester)
  */
-async function fetchRecordsAsNonOwner(collectionsQuery: CollectionsQuery, messageStore: MessageStore)
-  : Promise<BaseMessage[]> {
-  const publishedRecords = await fetchPublishedRecords(collectionsQuery, messageStore);
-  const unpublishedRecordsForRequester = await fetchUnpublishedRecordsForRequester(collectionsQuery, messageStore);
-  const unpublishedRecordsByRequester = await fetchUnpublishedRecordsByRequester(collectionsQuery, messageStore);
-  const records = [...publishedRecords, ...unpublishedRecordsForRequester, ...unpublishedRecordsByRequester];
-  return records;
+async function fetchRecordsAsNonOwner(
+    collectionsQuery: CollectionsQuery,
+    messageStore: MessageStore
+): Promise<BaseMessage[]> {
+    const publishedRecords = await fetchPublishedRecords(collectionsQuery, messageStore)
+    const unpublishedRecordsForRequester = await fetchUnpublishedRecordsForRequester(collectionsQuery, messageStore)
+    const unpublishedRecordsByRequester = await fetchUnpublishedRecordsByRequester(collectionsQuery, messageStore)
+    const records = [...publishedRecords, ...unpublishedRecordsForRequester, ...unpublishedRecordsByRequester]
+    return records
 }
 
 /**
  * Fetches only published records.
  */
-async function fetchPublishedRecords(collectionsQuery: CollectionsQuery, messageStore: MessageStore): Promise<BaseMessage[]> {
-  // fetch all published records matching the query
-  const includeCriteria = {
-    target            : collectionsQuery.target,
-    method            : DwnMethodName.CollectionsWrite,
-    published         : 'true',
-    isLatestBaseState : 'true',
-    ...collectionsQuery.message.descriptor.filter
-  };
-  removeUndefinedProperties(includeCriteria);
+async function fetchPublishedRecords(
+    collectionsQuery: CollectionsQuery,
+    messageStore: MessageStore
+): Promise<BaseMessage[]> {
+    // fetch all published records matching the query
+    const includeCriteria = {
+        target: collectionsQuery.target,
+        method: DwnMethodName.CollectionsWrite,
+        published: 'true',
+        isLatestBaseState: 'true',
+        ...collectionsQuery.message.descriptor.filter,
+    }
+    removeUndefinedProperties(includeCriteria)
 
-  const publishedRecords = await messageStore.query(includeCriteria);
-  return publishedRecords;
+    const publishedRecords = await messageStore.query(includeCriteria)
+    return publishedRecords
 }
 
 /**
  * Fetches only unpublished records that are intended for the requester (where `recipient` is the requester).
  */
-async function fetchUnpublishedRecordsForRequester(collectionsQuery: CollectionsQuery, messageStore: MessageStore)
-  : Promise<BaseMessage[]> {
-  // include records where recipient is requester
-  const includeCriteria = {
-    target            : collectionsQuery.target,
-    recipient         : collectionsQuery.author,
-    method            : DwnMethodName.CollectionsWrite,
-    isLatestBaseState : 'true',
-    ...collectionsQuery.message.descriptor.filter
-  };
-  removeUndefinedProperties(includeCriteria);
+async function fetchUnpublishedRecordsForRequester(
+    collectionsQuery: CollectionsQuery,
+    messageStore: MessageStore
+): Promise<BaseMessage[]> {
+    // include records where recipient is requester
+    const includeCriteria = {
+        target: collectionsQuery.target,
+        recipient: collectionsQuery.author,
+        method: DwnMethodName.CollectionsWrite,
+        isLatestBaseState: 'true',
+        ...collectionsQuery.message.descriptor.filter,
+    }
+    removeUndefinedProperties(includeCriteria)
 
-  // exclude all published records
-  const excludeCriteria = {
-    published: 'true'
-  };
+    // exclude all published records
+    const excludeCriteria = {
+        published: 'true',
+    }
 
-  const unpublishedRecordsForRequester = await messageStore.query(includeCriteria, excludeCriteria);
-  return unpublishedRecordsForRequester;
+    const unpublishedRecordsForRequester = await messageStore.query(includeCriteria, excludeCriteria)
+    return unpublishedRecordsForRequester
 }
 
 /**
  * Fetches only unpublished records that are authored by the requester.
  */
-async function fetchUnpublishedRecordsByRequester(collectionsQuery: CollectionsQuery, messageStore: MessageStore)
- : Promise<BaseMessage[]> {
-  // include records where recipient is requester
-  const includeCriteria = {
-    target            : collectionsQuery.target,
-    author            : collectionsQuery.author,
-    method            : DwnMethodName.CollectionsWrite,
-    isLatestBaseState : 'true',
-    ...collectionsQuery.message.descriptor.filter
-  };
-  removeUndefinedProperties(includeCriteria);
+async function fetchUnpublishedRecordsByRequester(
+    collectionsQuery: CollectionsQuery,
+    messageStore: MessageStore
+): Promise<BaseMessage[]> {
+    // include records where recipient is requester
+    const includeCriteria = {
+        target: collectionsQuery.target,
+        author: collectionsQuery.author,
+        method: DwnMethodName.CollectionsWrite,
+        isLatestBaseState: 'true',
+        ...collectionsQuery.message.descriptor.filter,
+    }
+    removeUndefinedProperties(includeCriteria)
 
-  // exclude all published records
-  const excludeCriteria = {
-    published: 'true'
-  };
+    // exclude all published records
+    const excludeCriteria = {
+        published: 'true',
+    }
 
-  const unpublishedRecordsForRequester = await messageStore.query(includeCriteria, excludeCriteria);
-  return unpublishedRecordsForRequester;
+    const unpublishedRecordsForRequester = await messageStore.query(includeCriteria, excludeCriteria)
+    return unpublishedRecordsForRequester
 }
 
 /**
@@ -173,25 +185,25 @@ async function fetchUnpublishedRecordsByRequester(collectionsQuery: CollectionsQ
  * @param dateSort - Sorting scheme
  * @returns Sorted Messages
  */
-async function sortRecords(
-  entries: BaseMessage[],
-  dateSort: DateSort
-): Promise<BaseMessage[]> {
+async function sortRecords(entries: BaseMessage[], dateSort: DateSort): Promise<BaseMessage[]> {
+    const collectionMessages = entries as CollectionsWriteMessage[]
 
-  const collectionMessages = entries as CollectionsWriteMessage[];
-
-  switch (dateSort) {
-  case DateSort.CreatedAscending:
-    return collectionMessages.sort((a, b) => lexicographicalCompare(a.descriptor.dateCreated, b.descriptor.dateCreated));
-  case DateSort.CreatedDescending:
-    return collectionMessages.sort((a, b) => lexicographicalCompare(b.descriptor.dateCreated, a.descriptor.dateCreated));
-  case DateSort.PublishedAscending:
-    return collectionMessages
-      .filter(m => m.descriptor.published)
-      .sort((a, b) => lexicographicalCompare(a.descriptor.datePublished, b.descriptor.datePublished));
-  case DateSort.PublishedDescending:
-    return collectionMessages
-      .filter(m => m.descriptor.published)
-      .sort((a, b) => lexicographicalCompare(b.descriptor.datePublished, a.descriptor.datePublished));
-  }
+    switch (dateSort) {
+        case DateSort.CreatedAscending:
+            return collectionMessages.sort((a, b) =>
+                lexicographicalCompare(a.descriptor.dateCreated, b.descriptor.dateCreated)
+            )
+        case DateSort.CreatedDescending:
+            return collectionMessages.sort((a, b) =>
+                lexicographicalCompare(b.descriptor.dateCreated, a.descriptor.dateCreated)
+            )
+        case DateSort.PublishedAscending:
+            return collectionMessages
+                .filter(m => m.descriptor.published)
+                .sort((a, b) => lexicographicalCompare(a.descriptor.datePublished, b.descriptor.datePublished))
+        case DateSort.PublishedDescending:
+            return collectionMessages
+                .filter(m => m.descriptor.published)
+                .sort((a, b) => lexicographicalCompare(b.descriptor.datePublished, a.descriptor.datePublished))
+    }
 }
