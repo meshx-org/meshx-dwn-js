@@ -49,13 +49,7 @@
             "warn"
         ],
         "max-len": [
-            "warn",
-            {
-                "code": 120,
-                "ignoreComments": true,
-                "ignoreUrls": true,
-                "ignoreRegExpLiterals": true
-            }
+            "off"
         ],
         "key-spacing": [
             "off"
