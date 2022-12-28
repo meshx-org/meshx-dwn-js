@@ -54,8 +54,10 @@ export class CollectionsWrite extends Message {
 
     /**
      * Creates a CollectionsWrite message.
-     * @param options.recordId If `undefined`, will be auto-filled as a originating message as convenience for developer.
-     * @param options.lineageParent If `undefined`, it will be auto-filled with value of `options.recordId` as convenience for developer.
+     * @param options.recordId If `undefined`, will be auto-filled as a originating message as
+     * convenience for developer.
+     * @param options.lineageParent If `undefined`, it will be auto-filled with value of `options.recordId`
+     * as convenience for developer.
      */
     public static async create(options: CollectionsWriteOptions): Promise<CollectionsWrite> {
         const dataCid = await getDagPbCid(options.data)
@@ -78,7 +80,8 @@ export class CollectionsWrite extends Message {
             descriptor.datePublished = getCurrentTimeInHighPrecision()
         }
 
-        // delete all descriptor properties that are `undefined` else the code will encounter the following IPLD issue when attempting to generate CID:
+        // delete all descriptor properties that are `undefined` else the code will encounter
+        // the following IPLD issue when attempting to generate CID:
         // Error: `undefined` is not supported by the IPLD Data Model and cannot be encoded
         removeUndefinedProperties(descriptor)
 
@@ -104,7 +107,8 @@ export class CollectionsWrite extends Message {
             contextId = options.contextId
         } else {
             // `contextId` is undefined
-            // we compute the contextId for the caller if `protocol` is specified (this is the case of the root message of a protocol context)
+            // we compute the contextId for the caller if `protocol` is specified
+            // (this is the case of the root message of a protocol context)
             if (descriptor.protocol !== undefined) {
                 contextId = await CollectionsWrite.getCanonicalId(author, descriptor)
             }
@@ -160,7 +164,8 @@ export class CollectionsWrite extends Message {
         // make sure the same `recordId` in message is the same as the `recordId` in `authorization`
         if (this.message.recordId !== this.authorizationPayload.recordId) {
             throw new Error(
-                `recordId in message ${this.message.recordId} does not match recordId in authorization: ${this.authorizationPayload.recordId}`
+                `recordId in message ${this.message.recordId} does not match
+                 recordId in authorization: ${this.authorizationPayload.recordId}`
             )
         }
 
@@ -170,7 +175,8 @@ export class CollectionsWrite extends Message {
 
             if (this.message.recordId !== expectedRecordId) {
                 throw new Error(
-                    `recordId in message: ${this.message.recordId} does not match deterministic recordId: ${expectedRecordId}`
+                    `recordId in message: ${this.message.recordId} does not match 
+                    deterministic recordId: ${expectedRecordId}`
                 )
             }
         }
@@ -181,7 +187,8 @@ export class CollectionsWrite extends Message {
 
             if (this.message.contextId !== expectedContextId) {
                 throw new Error(
-                    `contextId in message: ${this.message.contextId} does not match deterministic contextId: ${expectedContextId}`
+                    `contextId in message: ${this.message.contextId} does not 
+                    match deterministic contextId: ${expectedContextId}`
                 )
             }
         }
@@ -189,7 +196,8 @@ export class CollectionsWrite extends Message {
         // if `contextId` is given in message, make sure the same `contextId` is in the `authorization`
         if (this.message.contextId !== this.authorizationPayload.contextId) {
             throw new Error(
-                `contextId in message ${this.message.contextId} does not match contextId in authorization: ${this.authorizationPayload.contextId}`
+                `contextId in message ${this.message.contextId} does not 
+                match contextId in authorization: ${this.authorizationPayload.contextId}`
             )
         }
     }

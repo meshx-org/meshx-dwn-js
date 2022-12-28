@@ -1,19 +1,19 @@
 {
-  "all": true,
-  "cache": false,
-  "extension": [
-    ".js"
-  ],
-  "include": [
-    "dist/esm/src/**"
-  ],
-  "exclude": [
-    "**/types.js"
-  ],
-  "reporter": [
-    "text",
-    "cobertura",
-    "html",
-    "json-summary"
-  ]
+    "all": true,
+    "cache": false,
+    "extension": [
+        ".js"
+    ],
+    "include": [
+        "dist/esm/src/**"
+    ],
+    "exclude": [
+        "**/types.js"
+    ],
+    "reporter": [
+        "text",
+        "cobertura",
+        "html",
+        "json-summary"
+    ]
 }

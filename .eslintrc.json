@@ -18,7 +18,7 @@
         ],
         "no-console": "off",
         "indent": [
-            "error",
+            "warn",
             4
         ],
         "object-curly-spacing": [
@@ -46,7 +46,7 @@
             "error"
         ],
         "no-trailing-spaces": [
-            "error"
+            "warn"
         ],
         "max-len": [
             "error",

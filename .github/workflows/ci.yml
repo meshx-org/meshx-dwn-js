@@ -1,0 +1,62 @@
+# This workflow runs a handful of integrity checks.
+
+# when:
+#   - a pull request is opened against main
+#   - commits are pushed to main
+
+# what:
+#   - transpiles ts -> js and builds browser bundles to ensure everything builds without error.
+#   - runs type checker
+#   - runs tests (currently in node environment only)
+#   - runs linter. Will fail if there are any warnings
+
+name: Continuous Integration
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    security-check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js 18.8.0
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.8.0
+            - run: npm audit
+
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.17.0, 18.8.0]
+        steps:
+            - uses: actions/checkout@v3
+            
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            
+            # https://docs.npmjs.com/cli/v8/commands/npm-ci
+            - run: npm clean-install
+            
+            # check the licences allow list to avoid incorrectly licensed dependencies creeping in:
+            - run: npm run license-check
+            
+            # builds all bundle
+            - run: npm run build
+              
+            # runs linter. Job will fail if there are any warnings or errors
+            - run: npm run lint
+              
+            # runs tests in node environment without attempting to generate code coverage badges
+            - run: npm run test:node:ci
+              
+            # runs code coverage badge generation, throws if README output differs to README to be checked in (thus detects if tests were not run)
+            - run: npm run make-coverage-badges:ci
