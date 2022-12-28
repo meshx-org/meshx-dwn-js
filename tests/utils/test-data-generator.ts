@@ -10,23 +10,23 @@ import { secp256k1 } from '../../src/jose/algorithms/signing/secp256k1.js';
 import { sha256 } from 'multiformats/hashes/sha2';
 import { SignatureInput } from '../../src/jose/jws/general/types.js';
 import {
-  CollectionsQuery,
-  CollectionsQueryMessage,
-  CollectionsQueryOptions,
-  CollectionsWrite,
-  CollectionsWriteMessage,
-  CollectionsWriteOptions,
-  DateSort,
-  HooksWrite,
-  HooksWriteMessage,
-  HooksWriteOptions,
-  ProtocolDefinition,
-  ProtocolsConfigure,
-  ProtocolsConfigureMessage,
-  ProtocolsConfigureOptions,
-  ProtocolsQuery,
-  ProtocolsQueryMessage,
-  ProtocolsQueryOptions
+    CollectionsQuery,
+    CollectionsQueryMessage,
+    CollectionsQueryOptions,
+    CollectionsWrite,
+    CollectionsWriteMessage,
+    CollectionsWriteOptions,
+    DateSort,
+    HooksWrite,
+    HooksWriteMessage,
+    HooksWriteOptions,
+    ProtocolDefinition,
+    ProtocolsConfigure,
+    ProtocolsConfigureMessage,
+    ProtocolsConfigureOptions,
+    ProtocolsQuery,
+    ProtocolsQueryMessage,
+    ProtocolsQueryOptions
 } from '../../src/index.js';
 import { PrivateJwk, PublicJwk } from '../../src/jose/types.js';
 
@@ -137,315 +137,315 @@ export type GenerateHooksWriteMessageOutput = {
  */
 export class TestDataGenerator {
 
-  /**
+    /**
    * Generates a persona.
    */
-  public static async generatePersona(input?: Partial<Persona>): Promise<Persona> {
+    public static async generatePersona(input?: Partial<Persona>): Promise<Persona> {
     // generate DID if not given
-    let did = input?.did;
-    if (!did) {
-      const didSuffix = TestDataGenerator.randomString(32);
-      did = `did:example:${didSuffix}`;
+        let did = input?.did;
+        if (!did) {
+            const didSuffix = TestDataGenerator.randomString(32);
+            did = `did:example:${didSuffix}`;
+        }
+
+        // generate requester key ID if not given
+        const keyIdSuffix = TestDataGenerator.randomString(10);
+        const keyId = input?.keyId ?? `${did}#${keyIdSuffix}`;
+
+        // generate requester key pair if not given
+        const keyPair = input?.keyPair ?? await secp256k1.generateKeyPair();
+
+        const persona: Persona = {
+            did,
+            keyId,
+            keyPair
+        };
+
+        return persona;
     }
 
-    // generate requester key ID if not given
-    const keyIdSuffix = TestDataGenerator.randomString(10);
-    const keyId = input?.keyId ?? `${did}#${keyIdSuffix}`;
-
-    // generate requester key pair if not given
-    const keyPair = input?.keyPair ?? await secp256k1.generateKeyPair();
-
-    const persona: Persona = {
-      did,
-      keyId,
-      keyPair
-    };
-
-    return persona;
-  }
-
-  /**
+    /**
    * Creates a SignatureInput from the given Persona.
    */
-  public static createSignatureInputFromPersona(persona: Persona): SignatureInput {
-    const signatureInput = {
-      privateJwk      : persona.keyPair.privateJwk,
-      protectedHeader : {
-        alg : persona.keyPair.privateJwk.alg as string,
-        kid : persona.keyId
-      }
-    };
+    public static createSignatureInputFromPersona(persona: Persona): SignatureInput {
+        const signatureInput = {
+            privateJwk      : persona.keyPair.privateJwk,
+            protectedHeader : {
+                alg : persona.keyPair.privateJwk.alg as string,
+                kid : persona.keyId
+            }
+        };
 
-    return signatureInput;
-  }
+        return signatureInput;
+    }
 
-  /**
+    /**
    * Generates a ProtocolsConfigure message for testing.
    * Optional parameters are generated if not given.
    * Implementation currently uses `ProtocolsConfigure.create()`.
    */
-  public static async generateProtocolsConfigureMessage(
-    input?: GenerateProtocolsConfigureMessageInput
-  ): Promise<GenerateProtocolsConfigureMessageOutput> {
+    public static async generateProtocolsConfigureMessage(
+        input?: GenerateProtocolsConfigureMessageInput
+    ): Promise<GenerateProtocolsConfigureMessageOutput> {
 
-    const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
+        const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
 
-    // generate protocol definition if not given
-    let definition = input?.protocolDefinition;
-    if (!definition) {
-      const generatedLabel = 'record' + TestDataGenerator.randomString(10);
+        // generate protocol definition if not given
+        let definition = input?.protocolDefinition;
+        if (!definition) {
+            const generatedLabel = 'record' + TestDataGenerator.randomString(10);
 
-      definition = {
-        labels  : { },
-        records : { }
-      };
-      definition.labels[generatedLabel] = { schema: `test-object` };
-      definition.records[generatedLabel] = { };
-    }
+            definition = {
+                labels  : { },
+                records : { }
+            };
+            definition.labels[generatedLabel] = { schema: `test-object` };
+            definition.records[generatedLabel] = { };
+        }
 
-    const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
+        const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
 
-    const options: ProtocolsConfigureOptions = {
-      target      : target.did,
-      dateCreated : input?.dateCreated,
-      protocol    : input?.protocol ?? TestDataGenerator.randomString(20),
-      definition,
-      signatureInput
+        const options: ProtocolsConfigureOptions = {
+            target      : target.did,
+            dateCreated : input?.dateCreated,
+            protocol    : input?.protocol ?? TestDataGenerator.randomString(20),
+            definition,
+            signatureInput
+        };
+
+        const protocolsConfigure = await ProtocolsConfigure.create(options);
+
+        return {
+            requester,
+            target,
+            message: protocolsConfigure.message,
+            protocolsConfigure
+        };
     };
 
-    const protocolsConfigure = await ProtocolsConfigure.create(options);
-
-    return {
-      requester,
-      target,
-      message: protocolsConfigure.message,
-      protocolsConfigure
-    };
-  };
-
-  /**
+    /**
    * Generates a ProtocolsQuery message for testing.
    */
-  public static async generateProtocolsQueryMessage(input?: GenerateProtocolsQueryMessageInput): Promise<GenerateProtocolsQueryMessageOutput> {
+    public static async generateProtocolsQueryMessage(input?: GenerateProtocolsQueryMessageInput): Promise<GenerateProtocolsQueryMessageOutput> {
     // generate requester persona if not given
-    const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
+        const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
 
-    const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
+        const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
 
-    const options: ProtocolsQueryOptions = {
-      target      : target.did,
-      dateCreated : input?.dateCreated,
-      filter      : input?.filter,
-      signatureInput
+        const options: ProtocolsQueryOptions = {
+            target      : target.did,
+            dateCreated : input?.dateCreated,
+            filter      : input?.filter,
+            signatureInput
+        };
+        removeUndefinedProperties(options);
+
+        const protocolsQuery = await ProtocolsQuery.create(options);
+
+        return {
+            requester,
+            target,
+            message: protocolsQuery.message,
+            protocolsQuery
+        };
     };
-    removeUndefinedProperties(options);
 
-    const protocolsQuery = await ProtocolsQuery.create(options);
-
-    return {
-      requester,
-      target,
-      message: protocolsQuery.message,
-      protocolsQuery
-    };
-  };
-
-  /**
+    /**
    * Generates a CollectionsWrite message for testing.
    * Optional parameters are generated if not given.
    * If `requester` and `target` are both not given, use the same persona to pass authorization in tests by default.
    * Implementation currently uses `CollectionsWrite.create()`.
    */
-  public static async generateCollectionsWriteMessage(input?: GenerateCollectionsWriteMessageInput): Promise<GenerateCollectionsWriteMessageOutput> {
+    public static async generateCollectionsWriteMessage(input?: GenerateCollectionsWriteMessageInput): Promise<GenerateCollectionsWriteMessageOutput> {
 
-    const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
+        const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
 
-    const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
+        const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
 
-    const data = input?.data ?? TestDataGenerator.randomBytes(32);
+        const data = input?.data ?? TestDataGenerator.randomBytes(32);
 
-    const options: CollectionsWriteOptions = {
-      target        : target.did,
-      recipient     : input?.recipientDid ?? target.did, // use target if recipient is not explicitly set
-      protocol      : input?.protocol,
-      contextId     : input?.contextId,
-      schema        : input?.schema ?? TestDataGenerator.randomString(20),
-      recordId      : input?.recordId,
-      lineageParent : input?.lineageParent,
-      parentId      : input?.parentId,
-      published     : input?.published,
-      dataFormat    : input?.dataFormat ?? 'application/json',
-      dateCreated   : input?.dateCreated,
-      datePublished : input?.datePublished,
-      data,
-      signatureInput
+        const options: CollectionsWriteOptions = {
+            target        : target.did,
+            recipient     : input?.recipientDid ?? target.did, // use target if recipient is not explicitly set
+            protocol      : input?.protocol,
+            contextId     : input?.contextId,
+            schema        : input?.schema ?? TestDataGenerator.randomString(20),
+            recordId      : input?.recordId,
+            lineageParent : input?.lineageParent,
+            parentId      : input?.parentId,
+            published     : input?.published,
+            dataFormat    : input?.dataFormat ?? 'application/json',
+            dateCreated   : input?.dateCreated,
+            datePublished : input?.datePublished,
+            data,
+            signatureInput
+        };
+
+
+        const collectionsWrite = await CollectionsWrite.create(options);
+        const message = collectionsWrite.message as CollectionsWriteMessage;
+
+        return {
+            target,
+            requester,
+            message,
+            collectionsWrite
+        };
     };
 
-
-    const collectionsWrite = await CollectionsWrite.create(options);
-    const message = collectionsWrite.message as CollectionsWriteMessage;
-
-    return {
-      target,
-      requester,
-      message,
-      collectionsWrite
-    };
-  };
-
-  /**
+    /**
    * Generates a CollectionsQuery message for testing.
    */
-  public static async generateCollectionsQueryMessage(input?: GenerateCollectionsQueryMessageInput): Promise<GenerateCollectionsQueryMessageOutput> {
-    const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
+    public static async generateCollectionsQueryMessage(input?: GenerateCollectionsQueryMessageInput): Promise<GenerateCollectionsQueryMessageOutput> {
+        const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
 
-    const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
+        const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
 
-    const options: CollectionsQueryOptions = {
-      target      : target.did,
-      dateCreated : input?.dateCreated,
-      signatureInput,
-      filter      : input?.filter ?? { schema: TestDataGenerator.randomString(10) }, // must have one filter property if no filter is given
-      dateSort    : input?.dateSort
+        const options: CollectionsQueryOptions = {
+            target      : target.did,
+            dateCreated : input?.dateCreated,
+            signatureInput,
+            filter      : input?.filter ?? { schema: TestDataGenerator.randomString(10) }, // must have one filter property if no filter is given
+            dateSort    : input?.dateSort
+        };
+        removeUndefinedProperties(options);
+
+        const collectionsQuery = await CollectionsQuery.create(options);
+        const message = collectionsQuery.message as CollectionsQueryMessage;
+
+        return {
+            target,
+            requester,
+            message
+        };
     };
-    removeUndefinedProperties(options);
 
-    const collectionsQuery = await CollectionsQuery.create(options);
-    const message = collectionsQuery.message as CollectionsQueryMessage;
-
-    return {
-      target,
-      requester,
-      message
-    };
-  };
-
-  /**
+    /**
    * Generates a HooksWrite message for testing.
    */
-  public static async generateHooksWriteMessage(input?: GenerateHooksWriteMessageInput): Promise<GenerateHooksWriteMessageOutput> {
+    public static async generateHooksWriteMessage(input?: GenerateHooksWriteMessageInput): Promise<GenerateHooksWriteMessageOutput> {
 
-    const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
+        const { requester, target } = await TestDataGenerator.generateRequesterAndTargetPersonas(input);
 
-    const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
+        const signatureInput = TestDataGenerator.createSignatureInputFromPersona(requester);
 
-    const options: HooksWriteOptions = {
-      target      : target.did,
-      dateCreated : input?.dateCreated,
-      signatureInput,
-      filter      : input?.filter ?? { method: 'CollectionsWrite' }, // hardcode to filter on `CollectionsWrite` if no filter is given
+        const options: HooksWriteOptions = {
+            target      : target.did,
+            dateCreated : input?.dateCreated,
+            signatureInput,
+            filter      : input?.filter ?? { method: 'CollectionsWrite' }, // hardcode to filter on `CollectionsWrite` if no filter is given
+        };
+        removeUndefinedProperties(options);
+
+        const hooksWrite = await HooksWrite.create(options);
+
+        return {
+            target,
+            requester,
+            message: hooksWrite.message
+        };
     };
-    removeUndefinedProperties(options);
 
-    const hooksWrite = await HooksWrite.create(options);
-
-    return {
-      target,
-      requester,
-      message: hooksWrite.message
-    };
-  };
-
-  /**
+    /**
    * Generates a PermissionsRequest message for testing.
    */
-  public static async generatePermissionsRequestMessage(): Promise<{target, message: BaseMessage}> {
-    const { privateJwk } = await ed25519.generateKeyPair();
-    const target = 'did:jank:alice';
-    const permissionRequest = await PermissionsRequest.create({
-      target,
-      dateCreated    : getCurrentTimeInHighPrecision(),
-      description    : 'drugs',
-      grantedBy      : 'did:jank:bob',
-      grantedTo      : 'did:jank:alice',
-      scope          : { method: 'CollectionsWrite' },
-      signatureInput : { privateJwk: privateJwk, protectedHeader: { alg: privateJwk.alg as string, kid: 'whatev' } }
-    });
+    public static async generatePermissionsRequestMessage(): Promise<{target, message: BaseMessage}> {
+        const { privateJwk } = await ed25519.generateKeyPair();
+        const target = 'did:jank:alice';
+        const permissionRequest = await PermissionsRequest.create({
+            target,
+            dateCreated    : getCurrentTimeInHighPrecision(),
+            description    : 'drugs',
+            grantedBy      : 'did:jank:bob',
+            grantedTo      : 'did:jank:alice',
+            scope          : { method: 'CollectionsWrite' },
+            signatureInput : { privateJwk: privateJwk, protectedHeader: { alg: privateJwk.alg as string, kid: 'whatev' } }
+        });
 
-    return { target, message: permissionRequest.message };
-  }
+        return { target, message: permissionRequest.message };
+    }
 
-  /**
+    /**
    * Generates a random alpha-numeric string.
    */
-  public static randomString(length: number): string {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    public static randomString(length: number): string {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    // pick characters randomly
-    let randomString = '';
-    for (let i = 0; i < length; i++) {
-      randomString += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
+        // pick characters randomly
+        let randomString = '';
+        for (let i = 0; i < length; i++) {
+            randomString += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
 
-    return randomString;
-  };
+        return randomString;
+    };
 
-  /**
+    /**
    * Generates a random byte array of given length.
    */
-  public static randomBytes(length: number): Uint8Array {
-    const randomString = TestDataGenerator.randomString(length);
-    return new TextEncoder().encode(randomString);
-  };
+    public static randomBytes(length: number): Uint8Array {
+        const randomString = TestDataGenerator.randomString(length);
+        return new TextEncoder().encode(randomString);
+    };
 
-  /**
+    /**
    * Generates a random CBOR SHA256 CID.
    */
-  public static async randomCborSha256Cid(): Promise<string> {
-    const randomBytes = TestDataGenerator.randomBytes(32);
-    const randomMultihash = await sha256.digest(randomBytes);
-    const cid = await CID.createV1(cbor.code, randomMultihash);
-    return cid.toString();
-  }
-
-  /**
-   * Creates a mock DID resolution result for testing purposes.
-   */
-  public static createDidResolutionResult(persona: Persona): DIDResolutionResult {
-    return {
-      didResolutionMetadata : {},
-      didDocument           : {
-        id                 : persona.did,
-        verificationMethod : [{
-          controller   : persona.did,
-          id           : persona.keyId,
-          type         : 'JsonWebKey2020',
-          publicKeyJwk : persona.keyPair.publicJwk
-        }]
-      },
-      didDocumentMetadata: {}
-    };
-  }
-
-  /**
-   * Gets the method name from the given DID.
-   */
-  private static getDidMethodName(did: string): string {
-    const segments = did.split(':', 3);
-    if (segments.length < 3) {
-      throw new Error(`${did} is not a valid DID`);
+    public static async randomCborSha256Cid(): Promise<string> {
+        const randomBytes = TestDataGenerator.randomBytes(32);
+        const randomMultihash = await sha256.digest(randomBytes);
+        const cid = await CID.createV1(cbor.code, randomMultihash);
+        return cid.toString();
     }
 
-    return segments[1];
-  }
+    /**
+   * Creates a mock DID resolution result for testing purposes.
+   */
+    public static createDidResolutionResult(persona: Persona): DIDResolutionResult {
+        return {
+            didResolutionMetadata : {},
+            didDocument           : {
+                id                 : persona.did,
+                verificationMethod : [{
+                    controller   : persona.did,
+                    id           : persona.keyId,
+                    type         : 'JsonWebKey2020',
+                    publicKeyJwk : persona.keyPair.publicJwk
+                }]
+            },
+            didDocumentMetadata: {}
+        };
+    }
 
-  /**
+    /**
+   * Gets the method name from the given DID.
+   */
+    private static getDidMethodName(did: string): string {
+        const segments = did.split(':', 3);
+        if (segments.length < 3) {
+            throw new Error(`${did} is not a valid DID`);
+        }
+
+        return segments[1];
+    }
+
+    /**
    * Generates requester and target personas if not given.
    * If `requester` and `target` are both not given, use the same persona to pass authorization in tests by default.
    */
-  private static async generateRequesterAndTargetPersonas(
-    input?: { requester?: Persona, target?: Persona}
-  ): Promise<{ requester: Persona, target: Persona}> {
+    private static async generateRequesterAndTargetPersonas(
+        input?: { requester?: Persona, target?: Persona}
+    ): Promise<{ requester: Persona, target: Persona}> {
     // generate requester & target persona if not given
-    let requester = input?.requester ?? await TestDataGenerator.generatePersona();
-    const target = input?.target ?? await TestDataGenerator.generatePersona();
+        let requester = input?.requester ?? await TestDataGenerator.generatePersona();
+        const target = input?.target ?? await TestDataGenerator.generatePersona();
 
-    // if `requester` and `target` are both not given, use the same persona to pass authorization in tests by default
-    if (input?.requester === undefined &&
+        // if `requester` and `target` are both not given, use the same persona to pass authorization in tests by default
+        if (input?.requester === undefined &&
         input?.target === undefined) {
-      requester = target;
-    }
+            requester = target;
+        }
 
-    return { requester, target };
-  }
+        return { requester, target };
+    }
 }

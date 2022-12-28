@@ -189,21 +189,21 @@ async function sortRecords(entries: BaseMessage[], dateSort: DateSort): Promise<
     const collectionMessages = entries as CollectionsWriteMessage[]
 
     switch (dateSort) {
-        case DateSort.CreatedAscending:
-            return collectionMessages.sort((a, b) =>
-                lexicographicalCompare(a.descriptor.dateCreated, b.descriptor.dateCreated)
-            )
-        case DateSort.CreatedDescending:
-            return collectionMessages.sort((a, b) =>
-                lexicographicalCompare(b.descriptor.dateCreated, a.descriptor.dateCreated)
-            )
-        case DateSort.PublishedAscending:
-            return collectionMessages
-                .filter(m => m.descriptor.published)
-                .sort((a, b) => lexicographicalCompare(a.descriptor.datePublished, b.descriptor.datePublished))
-        case DateSort.PublishedDescending:
-            return collectionMessages
-                .filter(m => m.descriptor.published)
-                .sort((a, b) => lexicographicalCompare(b.descriptor.datePublished, a.descriptor.datePublished))
+    case DateSort.CreatedAscending:
+        return collectionMessages.sort((a, b) =>
+            lexicographicalCompare(a.descriptor.dateCreated, b.descriptor.dateCreated)
+        )
+    case DateSort.CreatedDescending:
+        return collectionMessages.sort((a, b) =>
+            lexicographicalCompare(b.descriptor.dateCreated, a.descriptor.dateCreated)
+        )
+    case DateSort.PublishedAscending:
+        return collectionMessages
+            .filter(m => m.descriptor.published)
+            .sort((a, b) => lexicographicalCompare(a.descriptor.datePublished, b.descriptor.datePublished))
+    case DateSort.PublishedDescending:
+        return collectionMessages
+            .filter(m => m.descriptor.published)
+            .sort((a, b) => lexicographicalCompare(b.descriptor.datePublished, a.descriptor.datePublished))
     }
 }

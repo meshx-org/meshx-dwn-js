@@ -12,197 +12,197 @@ const { Ed25519, secp256k1 } = signers;
 chai.use(chaiAsPromised);
 
 describe('General JWS Sign/Verify', () => {
-  afterEach(() => {
+    afterEach(() => {
     // restores all fakes, stubs, spies etc. not restoring causes a memory leak.
     // more info here: https://sinonjs.org/releases/v13/general-setup/
-    sinon.restore();
-  });
-
-  it('should sign and verify secp256k1 signature using a key vector correctly', async () => {
-    const { privateJwk, publicJwk } = await secp256k1.generateKeyPair();
-    const payloadBytes = new TextEncoder().encode('anyPayloadValue');
-    const protectedHeader = { alg: 'ES256K', kid: 'did:jank:alice#key1' };
-
-    const signer = await GeneralJwsSigner.create(payloadBytes, [{ privateJwk, protectedHeader }]);
-    const jws = signer.getJws();
-
-    const mockResolutionResult = {
-      didResolutionMetadata : {},
-      didDocument           : {
-        verificationMethod: [{
-          id           : 'did:jank:alice#key1',
-          type         : 'JsonWebKey2020',
-          controller   : 'did:jank:alice',
-          publicKeyJwk : publicJwk
-        }]
-      },
-      didDocumentMetadata: {}
-    };
-
-    const resolverStub = sinon.createStubInstance(DIDResolver, {
-      // @ts-ignore
-      resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        sinon.restore();
     });
 
-    const verifier = new GeneralJwsVerifier(jws);
+    it('should sign and verify secp256k1 signature using a key vector correctly', async () => {
+        const { privateJwk, publicJwk } = await secp256k1.generateKeyPair();
+        const payloadBytes = new TextEncoder().encode('anyPayloadValue');
+        const protectedHeader = { alg: 'ES256K', kid: 'did:jank:alice#key1' };
 
-    const verificationResult = await verifier.verify(resolverStub);
+        const signer = await GeneralJwsSigner.create(payloadBytes, [{ privateJwk, protectedHeader }]);
+        const jws = signer.getJws();
 
-    expect(verificationResult.signers.length).to.equal(1);
-    expect(verificationResult.signers).to.include('did:jank:alice');
-  });
+        const mockResolutionResult = {
+            didResolutionMetadata : {},
+            didDocument           : {
+                verificationMethod: [{
+                    id           : 'did:jank:alice#key1',
+                    type         : 'JsonWebKey2020',
+                    controller   : 'did:jank:alice',
+                    publicKeyJwk : publicJwk
+                }]
+            },
+            didDocumentMetadata: {}
+        };
 
-  it('should sign and verify ed25519 signature using a key vector correctly', async () => {
-    const { privateJwk, publicJwk } = await Ed25519.generateKeyPair();
-    const payloadBytes = new TextEncoder().encode('anyPayloadValue');
-    const protectedHeader = { alg: 'EdDSA', kid: 'did:jank:alice#key1' };
+        const resolverStub = sinon.createStubInstance(DIDResolver, {
+            // @ts-ignore
+            resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        });
 
-    const signer = await GeneralJwsSigner.create(payloadBytes, [{ privateJwk, protectedHeader }]);
-    const jws = signer.getJws();
+        const verifier = new GeneralJwsVerifier(jws);
 
-    const mockResolutionResult = {
-      didResolutionMetadata : {},
-      didDocument           : {
-        verificationMethod: [{
-          id           : 'did:jank:alice#key1',
-          type         : 'JsonWebKey2020',
-          controller   : 'did:jank:alice',
-          publicKeyJwk : publicJwk
-        }]
-      },
-      didDocumentMetadata: {}
-    };
+        const verificationResult = await verifier.verify(resolverStub);
 
-    const resolverStub = sinon.createStubInstance(DIDResolver, {
-      // @ts-ignore
-      resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        expect(verificationResult.signers.length).to.equal(1);
+        expect(verificationResult.signers).to.include('did:jank:alice');
     });
 
-    const verifier = new GeneralJwsVerifier(jws);
+    it('should sign and verify ed25519 signature using a key vector correctly', async () => {
+        const { privateJwk, publicJwk } = await Ed25519.generateKeyPair();
+        const payloadBytes = new TextEncoder().encode('anyPayloadValue');
+        const protectedHeader = { alg: 'EdDSA', kid: 'did:jank:alice#key1' };
 
-    const verificatonResult = await verifier.verify(resolverStub);
+        const signer = await GeneralJwsSigner.create(payloadBytes, [{ privateJwk, protectedHeader }]);
+        const jws = signer.getJws();
 
-    expect(verificatonResult.signers.length).to.equal(1);
-    expect(verificatonResult.signers).to.include('did:jank:alice');
-  });
+        const mockResolutionResult = {
+            didResolutionMetadata : {},
+            didDocument           : {
+                verificationMethod: [{
+                    id           : 'did:jank:alice#key1',
+                    type         : 'JsonWebKey2020',
+                    controller   : 'did:jank:alice',
+                    publicKeyJwk : publicJwk
+                }]
+            },
+            didDocumentMetadata: {}
+        };
 
-  it('should support multiple signatures using different key types', async () => {
-    const secp256k1Keys = await secp256k1.generateKeyPair();
-    const ed25519Keys = await Ed25519.generateKeyPair();
+        const resolverStub = sinon.createStubInstance(DIDResolver, {
+            // @ts-ignore
+            resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        });
 
-    const alice = {
-      did                  : 'did:jank:alice',
-      privateJwk           : secp256k1Keys.privateJwk,
-      jwkPublic            : secp256k1Keys.publicJwk,
-      protectedHeader      : { alg: 'ES256K', kid: 'did:jank:alice#key1' },
-      mockResolutionResult : {
-        didResolutionMetadata : {},
-        didDocument           : {
-          verificationMethod: [{
-            id           : 'did:jank:alice#key1',
-            type         : 'JsonWebKey2020',
-            controller   : 'did:jank:alice',
-            publicKeyJwk : secp256k1Keys.publicJwk
-          }]
-        },
-        didDocumentMetadata: {}
-      }
-    };
+        const verifier = new GeneralJwsVerifier(jws);
 
-    const bob = {
-      did                  : 'did:jank:bob',
-      privateJwk           : ed25519Keys.privateJwk,
-      jwkPublic            : ed25519Keys.publicJwk,
-      protectedHeader      : { alg: 'EdDSA', kid: 'did:jank:bob#key1' },
-      mockResolutionResult : {
-        didResolutionMetadata : {},
-        didDocument           : {
-          verificationMethod: [{
-            id           : 'did:jank:bob#key1',
-            type         : 'JsonWebKey2020',
-            controller   : 'did:jank:bob',
-            publicKeyJwk : ed25519Keys.publicJwk,
-          }]
-        },
-        didDocumentMetadata: {}
-      }
-    };
+        const verificatonResult = await verifier.verify(resolverStub);
 
-    const signatureInputs = [
-      { privateJwk: alice.privateJwk, protectedHeader: alice.protectedHeader },
-      { privateJwk: bob.privateJwk, protectedHeader: bob.protectedHeader },
-    ];
-
-    const payloadBytes = new TextEncoder().encode('anyPayloadValue');
-    const signer = await GeneralJwsSigner.create(payloadBytes, signatureInputs);
-    const jws = signer.getJws();
-
-    const resolveStub = sinon.stub();
-    resolveStub.withArgs('did:jank:alice').resolves(alice.mockResolutionResult);
-    resolveStub.withArgs('did:jank:bob').resolves(bob.mockResolutionResult);
-
-    const resolverStub = sinon.createStubInstance(DIDResolver, {
-      // @ts-ignore
-      resolve: resolveStub
+        expect(verificatonResult.signers.length).to.equal(1);
+        expect(verificatonResult.signers).to.include('did:jank:alice');
     });
 
-    const verifier = new GeneralJwsVerifier(jws);
-    const verificatonResult = await verifier.verify(resolverStub);
+    it('should support multiple signatures using different key types', async () => {
+        const secp256k1Keys = await secp256k1.generateKeyPair();
+        const ed25519Keys = await Ed25519.generateKeyPair();
 
-    expect(verificatonResult.signers.length).to.equal(2);
-    expect(verificatonResult.signers).to.include(alice.did);
-    expect(verificatonResult.signers).to.include(bob.did);
-  });
+        const alice = {
+            did                  : 'did:jank:alice',
+            privateJwk           : secp256k1Keys.privateJwk,
+            jwkPublic            : secp256k1Keys.publicJwk,
+            protectedHeader      : { alg: 'ES256K', kid: 'did:jank:alice#key1' },
+            mockResolutionResult : {
+                didResolutionMetadata : {},
+                didDocument           : {
+                    verificationMethod: [{
+                        id           : 'did:jank:alice#key1',
+                        type         : 'JsonWebKey2020',
+                        controller   : 'did:jank:alice',
+                        publicKeyJwk : secp256k1Keys.publicJwk
+                    }]
+                },
+                didDocumentMetadata: {}
+            }
+        };
 
-  it('should not verify the same signature more than once', async () => {
-    const { privateJwk: privateJwkEd25519, publicJwk: publicJwkEd25519 } = await Ed25519.generateKeyPair();
-    const { privateJwk: privateJwkSecp256k1, publicJwk: publicJwkSecp256k1 } = await secp256k1.generateKeyPair();
-    const payloadBytes = new TextEncoder().encode('anyPayloadValue');
-    const protectedHeaderEd25519 = { alg: 'EdDSA', kid: 'did:jank:alice#key1' };
-    const protectedHeaderSecp256k1 = { alg: 'ES256K', kid: 'did:jank:alice#key2' };
+        const bob = {
+            did                  : 'did:jank:bob',
+            privateJwk           : ed25519Keys.privateJwk,
+            jwkPublic            : ed25519Keys.publicJwk,
+            protectedHeader      : { alg: 'EdDSA', kid: 'did:jank:bob#key1' },
+            mockResolutionResult : {
+                didResolutionMetadata : {},
+                didDocument           : {
+                    verificationMethod: [{
+                        id           : 'did:jank:bob#key1',
+                        type         : 'JsonWebKey2020',
+                        controller   : 'did:jank:bob',
+                        publicKeyJwk : ed25519Keys.publicJwk,
+                    }]
+                },
+                didDocumentMetadata: {}
+            }
+        };
 
-    const signer = await GeneralJwsSigner.create(
-      payloadBytes,
-      [
-        { privateJwk: privateJwkEd25519, protectedHeader: protectedHeaderEd25519 },
-        { privateJwk: privateJwkSecp256k1, protectedHeader: protectedHeaderSecp256k1 }
-      ]
-    );
-    const jws = signer.getJws();
+        const signatureInputs = [
+            { privateJwk: alice.privateJwk, protectedHeader: alice.protectedHeader },
+            { privateJwk: bob.privateJwk, protectedHeader: bob.protectedHeader },
+        ];
 
-    const mockResolutionResult = {
-      didResolutionMetadata : {},
-      didDocument           : {
-        verificationMethod: [{
-          id           : 'did:jank:alice#key1',
-          type         : 'JsonWebKey2020',
-          controller   : 'did:jank:alice',
-          publicKeyJwk : publicJwkEd25519
-        }, {
-          id           : 'did:jank:alice#key2',
-          type         : 'JsonWebKey2020',
-          controller   : 'did:jank:alice',
-          publicKeyJwk : publicJwkSecp256k1
-        }]
-      },
-      didDocumentMetadata: {}
-    };
+        const payloadBytes = new TextEncoder().encode('anyPayloadValue');
+        const signer = await GeneralJwsSigner.create(payloadBytes, signatureInputs);
+        const jws = signer.getJws();
 
-    const resolverStub = sinon.createStubInstance(DIDResolver, {
-      // @ts-ignore
-      resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        const resolveStub = sinon.stub();
+        resolveStub.withArgs('did:jank:alice').resolves(alice.mockResolutionResult);
+        resolveStub.withArgs('did:jank:bob').resolves(bob.mockResolutionResult);
+
+        const resolverStub = sinon.createStubInstance(DIDResolver, {
+            // @ts-ignore
+            resolve: resolveStub
+        });
+
+        const verifier = new GeneralJwsVerifier(jws);
+        const verificatonResult = await verifier.verify(resolverStub);
+
+        expect(verificatonResult.signers.length).to.equal(2);
+        expect(verificatonResult.signers).to.include(alice.did);
+        expect(verificatonResult.signers).to.include(bob.did);
     });
 
-    const verifier = new GeneralJwsVerifier(jws);
+    it('should not verify the same signature more than once', async () => {
+        const { privateJwk: privateJwkEd25519, publicJwk: publicJwkEd25519 } = await Ed25519.generateKeyPair();
+        const { privateJwk: privateJwkSecp256k1, publicJwk: publicJwkSecp256k1 } = await secp256k1.generateKeyPair();
+        const payloadBytes = new TextEncoder().encode('anyPayloadValue');
+        const protectedHeaderEd25519 = { alg: 'EdDSA', kid: 'did:jank:alice#key1' };
+        const protectedHeaderSecp256k1 = { alg: 'ES256K', kid: 'did:jank:alice#key2' };
 
-    const verifySignatureSpy = sinon.spy(GeneralJwsVerifier, 'verifySignature');
-    const cacheSetSpy = sinon.spy(verifier.cache, 'set');
+        const signer = await GeneralJwsSigner.create(
+            payloadBytes,
+            [
+                { privateJwk: privateJwkEd25519, protectedHeader: protectedHeaderEd25519 },
+                { privateJwk: privateJwkSecp256k1, protectedHeader: protectedHeaderSecp256k1 }
+            ]
+        );
+        const jws = signer.getJws();
 
-    await verifier.verify(resolverStub);
-    await verifier.verify(resolverStub);
+        const mockResolutionResult = {
+            didResolutionMetadata : {},
+            didDocument           : {
+                verificationMethod: [{
+                    id           : 'did:jank:alice#key1',
+                    type         : 'JsonWebKey2020',
+                    controller   : 'did:jank:alice',
+                    publicKeyJwk : publicJwkEd25519
+                }, {
+                    id           : 'did:jank:alice#key2',
+                    type         : 'JsonWebKey2020',
+                    controller   : 'did:jank:alice',
+                    publicKeyJwk : publicJwkSecp256k1
+                }]
+            },
+            didDocumentMetadata: {}
+        };
 
-    sinon.assert.calledTwice(cacheSetSpy);
-    sinon.assert.calledTwice(verifySignatureSpy);
-  });
+        const resolverStub = sinon.createStubInstance(DIDResolver, {
+            // @ts-ignore
+            resolve: sinon.stub().withArgs('did:jank:alice').resolves(mockResolutionResult)
+        });
+
+        const verifier = new GeneralJwsVerifier(jws);
+
+        const verifySignatureSpy = sinon.spy(GeneralJwsVerifier, 'verifySignature');
+        const cacheSetSpy = sinon.spy(verifier.cache, 'set');
+
+        await verifier.verify(resolverStub);
+        await verifier.verify(resolverStub);
+
+        sinon.assert.calledTwice(cacheSetSpy);
+        sinon.assert.calledTwice(verifySignatureSpy);
+    });
 
 });
