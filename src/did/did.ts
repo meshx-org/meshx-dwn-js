@@ -1,3 +1,6 @@
+export const DID_REGEX =
+    /^did:([a-z0-9 -.]+):((?:(?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))*:)*((?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))+))((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(#.*)?$/
+
 /** DID related operations. */
 export class DID {
     /** Gets the method specific ID segment of a DID. ie. did:<method-name>:<method-specific-id> */
@@ -15,11 +18,7 @@ export class DID {
             throw new Error(`DID is not string: ${did}`)
         }
 
-        const didRegex =
-            // eslint-disable-next-line max-len
-            /^did:([a-z0-9]+):((?:(?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))*:)*((?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))+))((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(#.*)?$/
-
-        if (!didRegex.test(did)) {
+        if (!DID_REGEX.test(did)) {
             throw new TypeError(`DID is not a valid DID: ${did}`)
         }
     }
