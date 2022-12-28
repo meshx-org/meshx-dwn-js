@@ -6,5 +6,5 @@ import { p256 } from './p256.js'
 export const signers = {
     Ed25519: ed25519,
     secp256k1: secp256k1,
-    p256: p256,
+    'P-256': p256,
 }
