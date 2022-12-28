@@ -60,8 +60,7 @@ export const handleCollectionsWrite: MethodHandler = async (
                 return new MessageReply({
                     status: {
                         code: 400,
-                        detail: `expecting lineageParent to be ${expectedLineageParent} but 
-                        got ${incomingMessageLineageParent}`,
+                        detail: `expecting lineageParent to be ${expectedLineageParent} but got ${incomingMessageLineageParent}`,
                     },
                 })
             }

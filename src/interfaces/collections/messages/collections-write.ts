@@ -164,8 +164,7 @@ export class CollectionsWrite extends Message {
         // make sure the same `recordId` in message is the same as the `recordId` in `authorization`
         if (this.message.recordId !== this.authorizationPayload.recordId) {
             throw new Error(
-                `recordId in message ${this.message.recordId} does not match
-                 recordId in authorization: ${this.authorizationPayload.recordId}`
+                `recordId in message ${this.message.recordId} does not match recordId in authorization: ${this.authorizationPayload.recordId}`
             )
         }
 
@@ -175,8 +174,7 @@ export class CollectionsWrite extends Message {
 
             if (this.message.recordId !== expectedRecordId) {
                 throw new Error(
-                    `recordId in message: ${this.message.recordId} does not match 
-                    deterministic recordId: ${expectedRecordId}`
+                    `recordId in message: ${this.message.recordId} does not match deterministic recordId: ${expectedRecordId}`
                 )
             }
         }
@@ -187,8 +185,7 @@ export class CollectionsWrite extends Message {
 
             if (this.message.contextId !== expectedContextId) {
                 throw new Error(
-                    `contextId in message: ${this.message.contextId} does not 
-                    match deterministic contextId: ${expectedContextId}`
+                    `contextId in message: ${this.message.contextId} does not match deterministic contextId: ${expectedContextId}`
                 )
             }
         }
@@ -196,8 +193,7 @@ export class CollectionsWrite extends Message {
         // if `contextId` is given in message, make sure the same `contextId` is in the `authorization`
         if (this.message.contextId !== this.authorizationPayload.contextId) {
             throw new Error(
-                `contextId in message ${this.message.contextId} does not 
-                match contextId in authorization: ${this.authorizationPayload.contextId}`
+                `contextId in message ${this.message.contextId} does not match contextId in authorization: ${this.authorizationPayload.contextId}`
             )
         }
     }

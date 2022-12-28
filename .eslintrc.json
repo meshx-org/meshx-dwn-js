@@ -49,11 +49,7 @@
             "warn"
         ],
         "max-len": [
-            "error",
-            {
-                "code": 120,
-                "ignoreStrings": true
-            }
+            "off"
         ],
         "key-spacing": [
             "off"

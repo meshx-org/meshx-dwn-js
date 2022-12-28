@@ -38,7 +38,7 @@
         "bundle": "node ./build/create-browser-bundle.cjs",
         "clean": "rimraf dist && rimraf generated/*",
         "compile-validators": "node ./build/compile-validators.js",
-        "lint": "eslint . --ext .ts --max-warnings 0",
+        "lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix",
         "format": "prettier --write .",
         "make-coverage-badges": "istanbul-badges-readme",
