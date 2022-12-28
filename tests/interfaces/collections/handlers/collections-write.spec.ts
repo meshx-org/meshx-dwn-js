@@ -582,6 +582,7 @@ describe('handleCollectionsWrite()', () => {
                     didResolver
                 )
                 expect(reply.status.code).to.equal(401)
+                // eslint-disable-next-line quotes
                 expect(reply.status.detail).to.equal("record with schema 'unexpectedSchema' not allowed in protocol")
             })
 
