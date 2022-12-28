@@ -93,7 +93,7 @@ export class PermissionsGrant extends Message {
             throw new Error('this permission cannot be delegated')
         }
 
-        // `grantedBy` of the delegated permission will be `grantedTo` of the permission
+        // `grantedBy` of the delegated permission will be `grantedTo` of the permission 
         // being delegated because the grantee is the delegator
         const delegatedGrant = await PermissionsGrant.create({
             target,
