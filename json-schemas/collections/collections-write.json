@@ -1,166 +1,166 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://identity.foundation/dwn/json-schemas/collections-write.json",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "authorization",
-    "descriptor",
-    "recordId"
-  ],
-  "properties": {
-    "recordId": {
-      "type": "string"
-    },
-    "contextId": {
-      "type": "string"
-    },
-    "authorization": {
-      "$ref": "https://identity.foundation/dwn/json-schemas/general-jws.json"
-    },
-    "descriptor": {
-      "type": "object",
-      "properties": {
-        "method": {
-          "enum": [
-            "CollectionsWrite"
-          ],
-          "type": "string"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://identity.foundation/dwn/json-schemas/collections-write.json",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "authorization",
+        "descriptor",
+        "recordId"
+    ],
+    "properties": {
+        "recordId": {
+            "type": "string"
         },
-        "recipient": {
-          "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/did"
+        "contextId": {
+            "type": "string"
         },
-        "protocol": {
-          "type": "string"
+        "authorization": {
+            "$ref": "https://identity.foundation/dwn/json-schemas/general-jws.json"
         },
-        "schema": {
-          "type": "string"
-        },
-        "lineageParent": {
-          "type": "string"
-        },
-        "parentId": {
-          "type": "string"
-        },
-        "dataCid": {
-          "type": "string"
-        },
-        "dateCreated": {
-          "type": "string"
-        },
-        "published": {
-          "type": "boolean"
-        },
-        "datePublished": {
-          "type": "string"
-        },
-        "dataFormat": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "method",
-        "dataCid",
-        "dateCreated",
-        "dataFormat"
-      ],
-      "allOf": [
-        {
-          "$comment": "rule defining `published` and `datePublished` relationship",
-          "anyOf": [
-            {
-              "properties": {
+        "descriptor": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "enum": [
+                        "CollectionsWrite"
+                    ],
+                    "type": "string"
+                },
+                "recipient": {
+                    "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/did"
+                },
+                "protocol": {
+                    "type": "string"
+                },
+                "schema": {
+                    "type": "string"
+                },
+                "lineageParent": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                },
+                "dataCid": {
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
                 "published": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                    "type": "boolean"
+                },
+                "datePublished": {
+                    "type": "string"
+                },
+                "dataFormat": {
+                    "type": "string"
                 }
-              },
-              "required": [
-                "published",
-                "datePublished"
-              ]
             },
-            {
-              "properties": {
-                "published": {
-                  "type": "boolean",
-                  "enum": [
-                    false
-                  ]
-                }
-              },
-              "not": {
-                "required": [
-                  "datePublished"
-                ]
-              }
-            },
-            {
-              "allOf": [
+            "additionalProperties": false,
+            "required": [
+                "method",
+                "dataCid",
+                "dateCreated",
+                "dataFormat"
+            ],
+            "allOf": [
                 {
-                  "not": {
-                    "required": [
-                      "published"
+                    "$comment": "rule defining `published` and `datePublished` relationship",
+                    "anyOf": [
+                        {
+                            "properties": {
+                                "published": {
+                                    "type": "boolean",
+                                    "enum": [
+                                        true
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "published",
+                                "datePublished"
+                            ]
+                        },
+                        {
+                            "properties": {
+                                "published": {
+                                    "type": "boolean",
+                                    "enum": [
+                                        false
+                                    ]
+                                }
+                            },
+                            "not": {
+                                "required": [
+                                    "datePublished"
+                                ]
+                            }
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "not": {
+                                        "required": [
+                                            "published"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "not": {
+                                        "required": [
+                                            "datePublished"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
                     ]
-                  }
+                }
+            ]
+        },
+        "encodedData": {
+            "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/base64url"
+        }
+    },
+    "$comment": "rule defining `protocol` and `contextId` relationship",
+    "anyOf": [
+        {
+            "properties": {
+                "descriptor": {
+                    "type": "object",
+                    "required": [
+                        "protocol"
+                    ]
+                }
+            },
+            "required": [
+                "contextId"
+            ]
+        },
+        {
+            "allOf": [
+                {
+                    "not": {
+                        "required": [
+                            "contextId"
+                        ]
+                    }
                 },
                 {
-                  "not": {
-                    "required": [
-                      "datePublished"
-                    ]
-                  }
+                    "properties": {
+                        "descriptor": {
+                            "type": "object",
+                            "not": {
+                                "required": [
+                                    "protocol"
+                                ]
+                            }
+                        }
+                    }
                 }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "encodedData": {
-      "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/base64url"
-    }
-  },
-  "$comment": "rule defining `protocol` and `contextId` relationship",
-  "anyOf": [
-    {
-      "properties": {
-        "descriptor": {
-          "type": "object",
-          "required": [
-            "protocol"
-          ]
-        }
-      },
-      "required": [
-        "contextId"
-      ]
-    },
-    {
-      "allOf": [
-        {
-          "not": {
-            "required": [
-              "contextId"
             ]
-          }
-        },
-        {
-          "properties": {
-            "descriptor": {
-              "type": "object",
-              "not": {
-                "required": [
-                  "protocol"
-                ]
-              }
-            }
-          }
         }
-      ]
-    }
-  ]
+    ]
 }

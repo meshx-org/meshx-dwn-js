@@ -1,72 +1,72 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://identity.foundation/dwn/json-schemas/collections-query.json",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "authorization",
-    "descriptor"
-  ],
-  "properties": {
-    "authorization": {
-      "$ref": "https://identity.foundation/dwn/json-schemas/general-jws.json"
-    },
-    "descriptor": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "method",
-        "dateCreated",
-        "filter"
-      ],
-      "properties": {
-        "method": {
-          "enum": [
-            "CollectionsQuery"
-          ],
-          "type": "string"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://identity.foundation/dwn/json-schemas/collections-query.json",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "authorization",
+        "descriptor"
+    ],
+    "properties": {
+        "authorization": {
+            "$ref": "https://identity.foundation/dwn/json-schemas/general-jws.json"
         },
-        "dateCreated": {
-          "type": "string"
-        },
-        "filter": {
-          "type": "object",
-          "minProperties": 1,
-          "additionalProperties": false,
-          "properties": {
-            "protocol": {
-              "type": "string"
-            },
-            "recipient": {
-              "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/did"
-            },
-            "contextId": {
-              "type": "string"
-            },
-            "schema": {
-              "type": "string"
-            },
-            "recordId": {
-              "type": "string"
-            },
-            "parentId": {
-              "type": "string"
-            },
-            "dataFormat": {
-              "type": "string"
+        "descriptor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "method",
+                "dateCreated",
+                "filter"
+            ],
+            "properties": {
+                "method": {
+                    "enum": [
+                        "CollectionsQuery"
+                    ],
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
+                "filter": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                        "protocol": {
+                            "type": "string"
+                        },
+                        "recipient": {
+                            "$ref": "https://identity.foundation/dwn/json-schemas/defs.json#/definitions/did"
+                        },
+                        "contextId": {
+                            "type": "string"
+                        },
+                        "schema": {
+                            "type": "string"
+                        },
+                        "recordId": {
+                            "type": "string"
+                        },
+                        "parentId": {
+                            "type": "string"
+                        },
+                        "dataFormat": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "dateSort": {
+                    "enum": [
+                        "createdAscending",
+                        "createdDescending",
+                        "publishedAscending",
+                        "publishedDescending"
+                    ],
+                    "type": "string"
+                }
             }
-          }
-        },
-        "dateSort": {
-          "enum": [
-            "createdAscending",
-            "createdDescending",
-            "publishedAscending",
-            "publishedDescending"
-          ],
-          "type": "string"
         }
-      }
     }
-  }
 }
