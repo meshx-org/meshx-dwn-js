@@ -1,6 +1,6 @@
 {
     "name": "@meshx-org/dwn-sdk",
-    "version": "0.0.1-unstable.6",
+    "version": "0.0.1-unstable.7",
     "description": "A reference implementation of https://identity.foundation/decentralized-web-node/spec/",
     "license": "Apache-2.0",
     "homepage": "https://github.com/meshx-org/dwn-js#readme",

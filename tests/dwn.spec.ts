@@ -2,7 +2,7 @@ import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import sinon from 'sinon'
 
-import { DidKeyResolver } from '../src/did/did-key-resolver.js'
+import { DIDKeyResolver } from '../src/did/did-key-resolver.js'
 import { DIDMethodResolver, DIDResolutionResult } from '../src/did/did-resolver.js'
 import { DID } from '../src/did/did.js'
 import { DWN, DWNConfig } from '../src/dwn.js'
@@ -38,7 +38,7 @@ describe('DWN', () => {
 
         it('should process CollectionsWrite message signed by a `did:key` DID', async () => {
             // generate a `did:key` DID
-            const alice = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
 
             const messageData = await TestDataGenerator.generateCollectionsWriteMessage({
                 requester: alice,

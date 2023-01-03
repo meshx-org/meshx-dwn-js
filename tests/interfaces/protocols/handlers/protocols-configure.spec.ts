@@ -2,7 +2,7 @@ import chaiAsPromised from 'chai-as-promised'
 import sinon from 'sinon'
 import chai, { expect } from 'chai'
 
-import { DidKeyResolver } from '../../../../src/did/did-key-resolver.js'
+import { DIDKeyResolver } from '../../../../src/did/did-key-resolver.js'
 import { GeneralJwsSigner } from '../../../../src/jose/jws/general/signer.js'
 import { handleProtocolsConfigure } from '../../../../src/interfaces/protocols/handlers/protocols-configure.js'
 import { handleProtocolsQuery } from '../../../../src/interfaces/protocols/handlers/protocols-query.js'
@@ -12,17 +12,17 @@ import { MessageStoreLevel } from '../../../../src/store/message-store-level.js'
 import { TestStubGenerator } from '../../../utils/test-stub-generator.js'
 import { GenerateProtocolsConfigureMessageOutput, TestDataGenerator } from '../../../utils/test-data-generator.js'
 
-import { DidResolver, Encoder } from '../../../../src/index.js'
+import { DIDResolver, Encoder } from '../../../../src/index.js'
 
 chai.use(chaiAsPromised)
 
 describe('handleProtocolsQuery()', () => {
     describe('functional tests', () => {
-        let didResolver: DidResolver
+        let didResolver: DIDResolver
         let messageStore: MessageStoreLevel
 
         before(async () => {
-            didResolver = new DidResolver([new DidKeyResolver()])
+            didResolver = new DIDResolver([new DIDKeyResolver()])
 
             // important to follow this pattern to initialize the message store in tests
             // so that different suites can reuse the same block store and index location for testing
@@ -65,7 +65,7 @@ describe('handleProtocolsQuery()', () => {
         })
 
         it('should return 401 if auth fails', async () => {
-            const alice = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
             alice.keyId = 'wrongValue' // to fail authentication
             const { message } = await TestDataGenerator.generateProtocolsConfigureMessage({
                 requester: alice,
@@ -78,7 +78,7 @@ describe('handleProtocolsQuery()', () => {
         })
 
         it('should return 500 if encounter an internal error', async () => {
-            const alice = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
             const messageData = await TestDataGenerator.generateProtocolsConfigureMessage({
                 requester: alice,
                 target: alice,
@@ -94,7 +94,7 @@ describe('handleProtocolsQuery()', () => {
 
         it('should only be able to overwrite existing protocol if new protocol lexicographically larger', async () => {
             // generate three versions of the same protocol message
-            const alice = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
             const protocol = 'exampleProtocol'
             const messageData1 = await TestDataGenerator.generateProtocolsConfigureMessage({
                 requester: alice,

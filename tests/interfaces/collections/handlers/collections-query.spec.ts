@@ -2,8 +2,8 @@ import chaiAsPromised from 'chai-as-promised'
 import sinon from 'sinon'
 import chai, { expect } from 'chai'
 
-import { DidKeyResolver } from '../../../../src/did/did-key-resolver.js'
-import { DidResolver } from '../../../../src/index.js'
+import { DIDKeyResolver } from '../../../../src/did/did-key-resolver.js'
+import { DIDResolver } from '../../../../src/index.js'
 import { Encoder } from '../../../../src/utils/encoder.js'
 import { handleCollectionsQuery } from '../../../../src/interfaces/collections/handlers/collections-query.js'
 import { MessageStoreLevel } from '../../../../src/store/message-store-level.js'
@@ -19,7 +19,7 @@ chai.use(chaiAsPromised)
 
 describe('handleCollectionsQuery()', () => {
     describe('functional tests', () => {
-        let didResolver: DidResolver
+        let didResolver: DIDResolver
         let messageStore: MessageStoreLevel
 
         before(async () => {
@@ -32,7 +32,7 @@ describe('handleCollectionsQuery()', () => {
 
             await messageStore.open()
 
-            didResolver = new DidResolver([new DidKeyResolver()])
+            didResolver = new DIDResolver([new DIDKeyResolver()])
         })
 
         beforeEach(async () => {
@@ -334,8 +334,8 @@ describe('handleCollectionsQuery()', () => {
             // 2nd is also unpublished but is meant for (has recipient as) Bob
             // 3rd is also unpublished but is authored (sent) by Bob
             // 4th is published
-            const alice = await DidKeyResolver.generate()
-            const bob = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
+            const bob = await DIDKeyResolver.generate()
             const schema = 'schema1'
             const record1Data = await TestDataGenerator.generateCollectionsWriteMessage({
                 requester: alice,
@@ -419,8 +419,8 @@ describe('handleCollectionsQuery()', () => {
 
         // https://github.com/TBD54566975/dwn-sdk-js/issues/170
         it('#170 - should treat records with `published` explicitly set to `false` as unpublished', async () => {
-            const alice = await DidKeyResolver.generate()
-            const bob = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
+            const bob = await DIDKeyResolver.generate()
             const schema = 'schema1'
             const unpublishedCollectionsWrite = await TestDataGenerator.generateCollectionsWriteMessage(
                 { requester: alice, target: alice, schema, data: Encoder.stringToBytes('1'), published: false } // explicitly setting `published` to `false`
@@ -451,9 +451,9 @@ describe('handleCollectionsQuery()', () => {
         })
 
         it('should throw if a non-owner requester querying for records not intended for the requester (as recipient)', async () => {
-            const alice = await DidKeyResolver.generate()
-            const bob = await DidKeyResolver.generate()
-            const carol = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
+            const bob = await DIDKeyResolver.generate()
+            const carol = await DIDKeyResolver.generate()
 
             const bobQueryMessageData = await TestDataGenerator.generateCollectionsQueryMessage({
                 requester: bob,
@@ -468,8 +468,8 @@ describe('handleCollectionsQuery()', () => {
         })
 
         it('should allow DWN owner to use `recipient` as a filter in queries', async () => {
-            const alice = await DidKeyResolver.generate()
-            const bob = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
+            const bob = await DIDKeyResolver.generate()
 
             const bobQueryMessageData = await TestDataGenerator.generateCollectionsQueryMessage({
                 requester: alice,
@@ -484,8 +484,8 @@ describe('handleCollectionsQuery()', () => {
 
         it('should not fetch entries across tenants', async () => {
             // insert three messages into DB, two with matching schema
-            const alice = await DidKeyResolver.generate()
-            const bob = await DidKeyResolver.generate()
+            const alice = await DIDKeyResolver.generate()
+            const bob = await DIDKeyResolver.generate()
             const schema = 'myAwesomeSchema'
             const collectionsWriteMessage1Data = await TestDataGenerator.generateCollectionsWriteMessage({
                 requester: alice,
@@ -505,7 +505,7 @@ describe('handleCollectionsQuery()', () => {
             })
 
             // insert data into 2 different tenants
-            const didResolver = new DidResolver([new DidKeyResolver()])
+            const didResolver = new DIDResolver([new DIDKeyResolver()])
             await handleCollectionsWrite(collectionsWriteMessage1Data.message, messageStore, didResolver)
             await handleCollectionsWrite(collectionsWriteMessage2Data.message, messageStore, didResolver)
 

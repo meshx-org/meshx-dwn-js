@@ -6,7 +6,7 @@ import chai, { expect } from 'chai'
 
 import { base64url } from 'multiformats/bases/base64'
 import { CollectionsWriteMessage } from '../../../../src/interfaces/collections/types.js'
-import { DidKeyResolver } from '../../../../src/did/did-key-resolver.js'
+import { DIDKeyResolver } from '../../../../src/did/did-key-resolver.js'
 import { DIDResolver } from '../../../../src/did/did-resolver.js'
 import { Encoder } from '../../../../src/utils/encoder.js'
 import { GeneralJwsSigner } from '../../../../src/jose/jws/general/signer.js'
@@ -28,7 +28,7 @@ describe('handleCollectionsWrite()', () => {
 
     describe('functional tests', () => {
         before(async () => {
-            didResolver = new DIDResolver([new DidKeyResolver()])
+            didResolver = new DIDResolver([new DIDKeyResolver()])
 
             // important to follow this pattern to initialize the message store in tests
             // so that different suites can reuse the same block store and index location for testing
@@ -528,7 +528,7 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should fail authorization if protocol cannot be found for a protocol-based CollectionsWrite', async () => {
-                const alice = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
                 const protocol = 'nonExistentProtocol'
                 const data = Encoder.stringToBytes('any data')
                 const credentialApplicationMessageData = await TestDataGenerator.generateCollectionsWriteMessage({
@@ -549,7 +549,7 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should fail authorization if record schema is not an allowed type for protocol-based CollectionsWrite', async () => {
-                const alice = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
 
                 const protocol = 'https://identity.foundation/decentralized-web-node/protocols/credential-issuance'
                 const protocolConfigureMessageData = await TestDataGenerator.generateProtocolsConfigureMessage({
@@ -587,7 +587,7 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should fail authorization if record schema is not allowed at the hierarchical level attempted for the CollectionsWrite', async () => {
-                const alice = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
 
                 const protocol = 'https://identity.foundation/decentralized-web-node/protocols/credential-issuance'
                 const protocolDefinition = credentialIssuanceProtocolDefinition
@@ -626,7 +626,7 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should only allow DWN owner to write if record does not have an allow rule defined', async () => {
-                const alice = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
 
                 // write a protocol definition without an explicit allow rule
                 const protocol = 'private-protocol'
@@ -669,7 +669,7 @@ describe('handleCollectionsWrite()', () => {
                 expect(reply.status.code).to.equal(202)
 
                 // test that Bob is not allowed to write to Alice's DWN
-                const bob = await DidKeyResolver.generate()
+                const bob = await DIDKeyResolver.generate()
                 const bobWriteMessageData = await TestDataGenerator.generateCollectionsWriteMessage({
                     requester: bob,
                     target: alice,
@@ -685,8 +685,8 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should fail authorization if path to expected recipient in definition is longer than actual length of ancestor message chain', async () => {
-                const alice = await DidKeyResolver.generate()
-                const issuer = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
+                const issuer = await DIDKeyResolver.generate()
 
                 // create an invalid ancestor path that is longer than possible
                 const invalidProtocolDefinition = { ...credentialIssuanceProtocolDefinition }
@@ -744,8 +744,8 @@ describe('handleCollectionsWrite()', () => {
             })
 
             it('should fail authorization if path to expected recipient in definition has incorrect label', async () => {
-                const alice = await DidKeyResolver.generate()
-                const issuer = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
+                const issuer = await DIDKeyResolver.generate()
 
                 // create an invalid ancestor path that is longer than possible
                 const invalidProtocolDefinition = { ...credentialIssuanceProtocolDefinition }
@@ -804,8 +804,8 @@ describe('handleCollectionsWrite()', () => {
                 // simulate a DEX protocol with at least 3 layers of message exchange: ask -> offer -> fulfillment
                 // make sure recipient of offer can send fulfillment
 
-                const alice = await DidKeyResolver.generate()
-                const pfi = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
+                const pfi = await DIDKeyResolver.generate()
 
                 // write a DEX protocol definition
                 const protocol = 'dex-protocol'
@@ -894,8 +894,8 @@ describe('handleCollectionsWrite()', () => {
                 // 2. Alice sends an ask to a PFI
                 // 3. Alice sends a fulfillment to an non-existent offer to the PFI
 
-                const alice = await DidKeyResolver.generate()
-                const pfi = await DidKeyResolver.generate()
+                const alice = await DIDKeyResolver.generate()
+                const pfi = await DIDKeyResolver.generate()
 
                 // write a DEX protocol definition
                 const protocol = 'dex-protocol'
