@@ -1,14 +1,15 @@
 import { RequestSchema } from './types.js'
-import { validateJsonSchema } from '../validator.js'
+import { validateZodSchema } from '../validator.js'
+import { request } from '../models/request.js'
 
 export class Request {
     /**
      * parses the provided payload into a `RequestSchema`.
      */
-    static parse(request: object): RequestSchema {
+    static parse(requestObj: object): RequestSchema {
         // throws an error if validation fails
-        validateJsonSchema('Request', request)
+        validateZodSchema(request, requestObj)
 
-        return request as RequestSchema
+        return requestObj as RequestSchema
     }
 }

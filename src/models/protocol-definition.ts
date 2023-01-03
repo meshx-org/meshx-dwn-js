@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { protocolRuleSet } from './protocol-rule-set'
+import { protocolRuleSet } from './protocol-rule-set.js'
 
 export const protocolDefintion = z.strictObject({
     labels: z.record(

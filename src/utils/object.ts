@@ -10,3 +10,6 @@ export function removeUndefinedProperties(obj: object): void {
         }
     })
 }
+
+export const isEmptyObject = (empty: object): boolean => (Object.keys(empty).length === 0 && empty.constructor === Object)
+

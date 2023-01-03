@@ -8,4 +8,4 @@ export const did = z
         /^did:([a-z0-9 -.]+):((?:(?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))*:)*((?:[a-zA-Z0-9._-]|(?:%[0-9a-fA-F]{2}))+))((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(#.*)?$/
     )
 
-export const uuid = z.string()
+export const uuid = z.string().uuid()

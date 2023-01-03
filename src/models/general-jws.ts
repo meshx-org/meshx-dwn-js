@@ -1,7 +1,7 @@
 import z from 'zod'
 
-export const generalJws = z.object({
-    payload: z.string(),
+export const generalJws = z.strictObject({
+    payload: z.string().optional(),
     signatures: z
         .array(
             z.object({
@@ -9,7 +9,8 @@ export const generalJws = z.object({
                 signature: z.string(),
             })
         )
-        .min(1),
+        .min(1)
+        .optional(),
 })
 
 export type GeneralJws = z.infer<typeof generalJws>

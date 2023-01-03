@@ -1,5 +1,5 @@
 import z from 'zod'
-import { generalJws } from '../../general-jws'
+import { generalJws } from '../../general-jws.js'
 
 export const permissionsRequestDescriptor = z.object({
     method: z.literal('PermissionsRequest'),

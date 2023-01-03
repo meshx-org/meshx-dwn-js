@@ -10,9 +10,7 @@ type ResponseOptions = {
     replies?: MessageReply[]
 }
 
-/**
- * class used to create a response that will be returned for a given request
- */
+/** Class used to create a response that will be returned for a given request */
 export class Response {
     // present ONLY if there is a general request-related issue
     // e.g. malformed request, invalid target. `status` and `replies` are mutually exclusive

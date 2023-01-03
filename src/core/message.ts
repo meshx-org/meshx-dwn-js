@@ -8,7 +8,8 @@ import { GeneralJwsSigner } from '../jose/jws/general/signer.js'
 import { GeneralJwsVerifier } from '../jose/jws/general/verifier.js'
 import { generateCid } from '../utils/cid.js'
 import { lexicographicalCompare } from '../utils/string.js'
-import { validateJsonSchema } from '../validator.js'
+import { validateZodSchema } from '../validator.js'
+import { methodSchema } from '../models/methods/index.js'
 
 export enum DwnMethodName {
     CollectionsWrite = 'CollectionsWrite',
@@ -47,7 +48,7 @@ export abstract class Message {
      */
     public static validateJsonSchema(rawMessage: any): BaseMessage {
         // validate throws an error if message is invalid
-        validateJsonSchema(rawMessage.descriptor.method, rawMessage)
+        validateZodSchema(methodSchema[rawMessage.descriptor.method], rawMessage)
 
         return rawMessage as BaseMessage
     }

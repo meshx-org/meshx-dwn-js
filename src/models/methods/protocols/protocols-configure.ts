@@ -1,7 +1,6 @@
 import z from 'zod'
-import { generalJws } from '../../general-jws'
-
-export const protocolDefintion = z.any()
+import { generalJws } from '../../general-jws.js'
+import { protocolDefintion } from '../../protocol-definition.js'
 
 export const protocolsConfigureDescriptor = z.object({
     method: z.literal('ProtocolsConfigure'),

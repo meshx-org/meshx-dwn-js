@@ -157,6 +157,7 @@ describe('handleProtocolsQuery()', () => {
                 target: alice,
                 filter: { protocol },
             })
+
             reply = await handleProtocolsQuery(queryMessageData.message, messageStore, didResolver)
 
             expect(reply.status.code).to.equal(200)

@@ -1,23 +1,36 @@
 import z from 'zod'
-import { did } from '../../definitions'
-import { generalJws } from '../../general-jws'
+import { isEmptyObject } from '../../../utils/object.js'
+import { did } from '../../definitions.js'
+import { generalJws } from '../../general-jws.js'
 
-export const collectionsQueryDescriptor = z.object({
+export const collectionsQueryDescriptor = z.strictObject({
     method: z.literal('CollectionsQuery'),
     dateCreated: z.string(),
-    filter: z.object({
-        protocol: z.string().optional(),
-        recipient: did.optional(),
-        contextId: z.string().optional(),
-        schema: z.string().optional(),
-        recordId: z.string().optional(),
-        parentId: z.string().optional(),
-        dataFormat: z.string().optional(),
-    }),
+    filter: z
+        .strictObject({
+            protocol: z.string(),
+            recipient: did,
+            contextId: z.string(),
+            schema: z.string(),
+            recordId: z.string(),
+            parentId: z.string(),
+            dataFormat: z.string(),
+        })
+        .partial()
+        .superRefine((arg, ctx) => {
+            if (isEmptyObject(arg)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom, // customize your issue
+                    message: `must not have fewer than 1 properties`,
+                })
+            }
+
+            return z.NEVER // The return value is not used, but we need to return something to satisfy the typing
+        }),
     dateSort: z.enum(['createdAscending', 'createdDescending', 'publishedAscending', 'publishedDescending']).optional(),
 })
 
-export const collectionsQuery = z.object({
+export const collectionsQuery = z.strictObject({
     descriptor: collectionsQueryDescriptor,
     authorization: generalJws,
 })
