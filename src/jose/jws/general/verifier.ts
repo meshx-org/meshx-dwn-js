@@ -5,10 +5,11 @@ import type { GeneralJws, SignatureEntry } from './types.js'
 
 import lodash from 'lodash'
 
+import { jwkVerificationMethod as verificationMethodSchema } from '../../../models/jwk-verification-method.js'
 import { DIDResolver } from '../../../did/did-resolver.js'
 import { Encoder } from '../../../utils/encoder.js'
 import { MemoryCache } from '../../../utils/memory-cache.js'
-import { validateJsonSchema } from '../../../validator.js'
+import { validateZodSchema } from '../../../validator.js'
 import { signers as verifiers } from '../../algorithms/signing/signers.js'
 
 type VerificationResult = {
@@ -85,12 +86,12 @@ export class GeneralJwsVerifier {
 
         let verificationMethod: VerificationMethod | undefined
 
-        for (const vm of verificationMethods) {
+        for (const method of verificationMethods) {
             // consider optimizing using a set for O(1) lookups if needed
             // key ID in DID Document may or may not be fully qualified. e.g.
             // `did:ion:alice#key1` or `#key1`
-            if (kid.endsWith(vm.id)) {
-                verificationMethod = vm
+            if (kid.endsWith(method.id)) {
+                verificationMethod = method
                 break
             }
         }
@@ -99,7 +100,7 @@ export class GeneralJwsVerifier {
             throw new Error('public key needed to verify signature not found in DID Document')
         }
 
-        validateJsonSchema('JwkVerificationMethod', verificationMethod)
+        validateZodSchema(verificationMethodSchema, verificationMethod)
 
         const { publicKeyJwk: publicJwk } = verificationMethod
 
