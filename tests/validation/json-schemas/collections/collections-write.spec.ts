@@ -298,7 +298,7 @@ describe('CollectionsWrite schema definition', () => {
 
         expect(() => {
             Message.validateJsonSchema(invalidMessage)
-        }).throws("must have required property 'datePublished'")
+        }).throws('must have required property \'datePublished\'')
     })
 
     it('should throw if published is missing and datePublished is present', () => {
@@ -325,6 +325,6 @@ describe('CollectionsWrite schema definition', () => {
 
         expect(() => {
             Message.validateJsonSchema(invalidMessage)
-        }).throws("must have required property 'published'")
+        }).throws('must have required property \'published\'')
     })
 })
