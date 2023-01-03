@@ -11,7 +11,7 @@ chai.use(chaiAsPromised)
 describe('DidResolver', () => {
     it('should cache the resolution result and use the cached result when available', async () => {
         const did = 'did:ion:unusedDid'
-        const didIonResolver = new DIDSidetreeResolver('unusedResolutionEndpoint')
+        const didIonResolver = new DIDSidetreeResolver('ion', ['unusedResolutionEndpoint'])
         const didResolver = new DIDResolver([didIonResolver])
 
         const mockResolution = {

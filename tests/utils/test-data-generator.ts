@@ -1,7 +1,6 @@
 import * as cbor from '@ipld/dag-cbor'
 import { BaseMessage } from '../../src/core/types.js'
 import { CID } from 'multiformats/cid'
-import { DIDResolutionResult } from '../../src/did/did-resolver.js'
 import { ed25519 } from '../../src/jose/algorithms/signing/ed25519.js'
 import { getCurrentTimeInHighPrecision } from '../../src/utils/time.js'
 import { PermissionsRequest } from '../../src/interfaces/permissions/messages/permissions-request.js'
@@ -28,7 +27,8 @@ import {
     ProtocolsQueryMessage,
     ProtocolsQueryOptions,
 } from '../../src/index.js'
-import { PrivateJwk, PublicJwk } from '../../src/jose/types.js'
+import type { PrivateJwk, PublicJwk } from '../../src/jose/types.js'
+import type { DIDResolutionResult } from '../../src/did/types.js'
 
 /**
  * A logical grouping of user data used to generate test messages.

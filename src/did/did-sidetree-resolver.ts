@@ -10,7 +10,7 @@ export class DIDSidetreeResolver implements DIDMethodResolver {
      */
     constructor(
         private sidetreeMethod = 'ion',
-        private resolutionEndpoints = ['https://discover.did.microsoft.com/1.0/identifiers/']
+        private resolutionEndpoints = ['https://discover.did.msidentity.com/1.0/identifiers/']
     ) {}
 
     method(): string {

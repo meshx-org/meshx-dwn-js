@@ -8,7 +8,6 @@ export function validateZodSchema<T>(schema: z.ZodType<T>, payload: any): void {
     } else {
         const { error } = result as SafeParseError<T>
         const [errorObj] = error.errors
-        console.log(error.errors)
         const { path, message } = errorObj
 
         throw new Error(`($${path.join('.')}) ${message}`)

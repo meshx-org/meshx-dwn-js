@@ -1,4 +1,4 @@
-import type { DIDMethodResolver } from './did/did-resolver.js'
+import type { DIDMethodResolver } from './did/types.js'
 import type { MessageStore } from './store/types.js'
 import type { BaseMessage, RequestSchema } from './core/types.js'
 import type { Interface, MethodHandler } from './interfaces/types.js'

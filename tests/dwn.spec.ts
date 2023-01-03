@@ -3,7 +3,7 @@ import chaiAsPromised from 'chai-as-promised'
 import sinon from 'sinon'
 
 import { DIDKeyResolver } from '../src/did/did-key-resolver.js'
-import { DIDMethodResolver, DIDResolutionResult } from '../src/did/did-resolver.js'
+import { DIDResolutionResult, DIDMethodResolver } from '../src/did/types.js'
 import { DID } from '../src/did/did.js'
 import { DWN, DWNConfig } from '../src/dwn.js'
 import { MessageStoreLevel } from '../src/store/message-store-level.js'

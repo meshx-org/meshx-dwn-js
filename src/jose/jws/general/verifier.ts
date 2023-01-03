@@ -1,6 +1,6 @@
 import type { Cache } from '../../../utils/types.js'
 import type { PublicJwk } from '../../types.js'
-import type { VerificationMethod } from '../../../did/did-resolver.js'
+import type { VerificationMethod } from '../../../did/types.js'
 import type { GeneralJws, SignatureEntry } from './types.js'
 
 import lodash from 'lodash'

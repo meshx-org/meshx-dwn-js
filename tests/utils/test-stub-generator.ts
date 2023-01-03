@@ -1,5 +1,6 @@
 import sinon from 'sinon';
-import { DIDResolutionResult, DIDResolver } from '../../src/did/did-resolver.js';
+import { DIDResolver } from '../../src/did/did-resolver.js';
+import type { DIDResolutionResult } from '../../src/did/types.js';
 import { Persona, TestDataGenerator } from './test-data-generator.js';
 
 /**

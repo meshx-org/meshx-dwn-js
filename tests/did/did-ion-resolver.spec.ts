@@ -8,9 +8,10 @@ import { DIDSidetreeResolver } from '../../src/did/did-sidetree-resolver.js'
 // extends chai to test promises
 chai.use(chaiAsPromised)
 
-describe('DidIonResolver', () => {
-    const defaultResolutionEndpoint = 'https://discover.did.microsoft.com/1.0/identifiers/'
+describe('DIDSidetreeResolver', () => {
+    const defaultResolutionEndpoint = 'https://discover.did.msidentity.com/1.0/identifiers/'
     let networkAvailable = false
+
     before(async () => {
         // test network connectivity, `networkAvailable` is used by tests to decide whether to run tests through real network calls or stubs
         const testDidUrl = `${defaultResolutionEndpoint}did:ion:EiClkZMDxPKqC9c-umQfTkR8vvZ9JPhl_xLDI9Nfk38w5w`
@@ -27,18 +28,18 @@ describe('DidIonResolver', () => {
     })
 
     it('should set a default resolution endpoint when none is given in constructor', async () => {
-        const didIonResolver = new DIDSidetreeResolver()
+        const didSidetreeResolver = new DIDSidetreeResolver()
 
-        expect(didIonResolver['resolutionEndpoint']).to.equal(defaultResolutionEndpoint)
+        expect(didSidetreeResolver['resolutionEndpoints']).to.eql([defaultResolutionEndpoint])
     })
 
     it('should resolve an ION DID correctly', async () => {
         const did = 'did:ion:EiClkZMDxPKqC9c-umQfTkR8vvZ9JPhl_xLDI9Nfk38w5w'
-        const didIonResolver = new DIDSidetreeResolver()
+        const didSidetreeResolver = new DIDSidetreeResolver()
 
         // stub network call if network is not available
         if (!networkAvailable) {
-            sinon.stub(didIonResolver as any, 'fetch').resolves({
+            sinon.stub(didSidetreeResolver as any, 'fetch').resolves({
                 status: 200,
                 json: async () =>
                     Promise.resolve({
@@ -48,7 +49,7 @@ describe('DidIonResolver', () => {
             })
         }
 
-        const resolutionDocument = await didIonResolver.resolve(did)
+        const resolutionDocument = await didSidetreeResolver.resolve(did)
         expect(resolutionDocument.didDocument.id).to.equal(did)
         expect(resolutionDocument.didDocumentMetadata.canonicalId).to.equal(did)
     })
