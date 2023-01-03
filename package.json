@@ -95,7 +95,7 @@
         "chai": "4.3.6",
         "chai-as-promised": "7.1.1",
         "cross-env": "7.0.3",
-        "esbuild": "0.14.39",
+        "esbuild": "0.16.13",
         "eslint": "8.23.1",
         "events": "3.3.0",
         "istanbul-badges-readme": "1.8.1",
