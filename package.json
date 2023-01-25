@@ -58,7 +58,7 @@
         "@js-temporal/polyfill": "0.4.3",
         "@noble/curves": "0.5.1",
         "@noble/ed25519": "1.7.1",
-        "@noble/secp256k1": "1.5.5",
+        "@noble/secp256k1": "1.7.1",
         "@swc/helpers": "0.4.14",
         "cross-fetch": "3.1.5",
         "date-fns": "2.29.3",
